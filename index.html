@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foreign Meal Search</title>
+    <!--Css file-->
+    <link rel="stylesheet" href="./css/index.css">
+    <!--Font awesome cdn-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" 
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="container">
+        <h1 class="heading">
+            Foreign Foods Search
+        </h1>
+        <div class="meal-container">
+            <form action="" class="meal_container-flex" id="submit">
+                <input type="text" id="search" placeholder="Search For Meal eg:Pizza" autocomplete="off">
+                <button class="search-btn"type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+            <button class="random-btn" type="submit" id="random">Random</button>
+        </div>
+        <p id="meal-result-heading" class="meal-result-heading">
+            
+        </p>
+        <div class,="meals-container">
+            <div id="meals" class="all-meals">
+            
+            </div>
+        </div>
+        <div id="single-meal-container">
+            
+        </div>
+    </div>
+    <!--js file-->
+    <script src="./script/index.js"></script>
+</body>
+</html>
