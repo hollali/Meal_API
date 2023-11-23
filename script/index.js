@@ -31,7 +31,7 @@ function findMeal(e) {
         // clear input field
         search.value = "";
     }else{
-        alert("Please input Data");
+        alert("Please Input Meal");
     }
 }
 // function to get meal id
@@ -39,7 +39,6 @@ function getsingleItemID(mealId){
     fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`)
     .then((res)=> res.json())
     .then((data)=>{
-        console.log(data);
         const meal = data.meals[0];
         addMealToDOM(meal);
     });
