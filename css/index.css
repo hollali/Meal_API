@@ -6,7 +6,9 @@
     box-sizing: border-box;
     font-family: "Roboto Condensed", sans-serif;
 }
-
+html {
+  scroll-behavior: smooth;
+}
 .container {
     max-width: 900px;
     margin: auto;
