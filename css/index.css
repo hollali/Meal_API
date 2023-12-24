@@ -95,6 +95,31 @@ input {
   opacity: 1;
 }
 
+/* Add these styles for the responsive footer */
+.footer {
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Additional styles for your existing elements */
+/*.container {
+  /* Your existing container styles */
+/*}
+
+/* ... other styles ... */
+
+
 /* javascript stylings for one single meal */
 single-meal {
   margin: 30px auto;
