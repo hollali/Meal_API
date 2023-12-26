@@ -150,10 +150,10 @@ input {
   /* Your existing container styles */
 /*}
 
-/* ... other styles ... */
+/** ... other styles ... */
 
 
-/* javascript stylings for one single meal */
+/** javascript stylings for one single meal */
 single-meal {
   margin: 30px auto;
   width: 70%;
