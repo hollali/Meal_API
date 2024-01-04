@@ -107,7 +107,8 @@ body{
   font-family: sans-serif;
 }
 footer{
-  position: absolute;
+  position: relative;
+  margin-top : 410px;
   bottom: 0;
   left: 0;
   right: 0;
