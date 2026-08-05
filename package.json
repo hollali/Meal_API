@@ -1,0 +1,26 @@
+{
+  "name": "meal_api",
+  "version": "1.1.0",
+  "description": "Search for meals from around the world and discover recipes, ingredients, and instructions, powered by the TheMealDB API.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "meals",
+    "recipes",
+    "themealdb",
+    "pwa",
+    "vite"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "jsdom": "^29.1.1",
+    "vite": "^8.2.0",
+    "vitest": "^4.1.10"
+  }
+}

@@ -1,51 +1,68 @@
 # Meal Search Web App
 
-## Overview
-
-This is a simple web application that allows users to search for meals and discover random recipes. It utilizes HTML for structuring the content, CSS for styling, and JavaScript for interactivity. The app fetches meal data from an external API and displays the results dynamically on the page.
+A progressive web app for searching meals and discovering recipes. Users can search by name, browse by category, roll a random recipe, and save favorites — all powered by the [TheMealDB API](https://www.themealdb.com/api.php).
 
 ## Features
 
-- **Search for Meal**: Users can enter a meal name in the search bar to find specific recipes.
-- **Random Meal**: Users can click the "Random" button to discover a random meal recipe.
-- **Dynamic Display**: Meal search results are dynamically displayed on the page.
+- **Search for meals** by name, with debounced live search as you type.
+- **Browse by category** via clickable filter chips (Beef, Chicken, Seafood, ...).
+- **Random meal** — one click for a surprise recipe.
+- **Recipe modal** — full details (ingredients, instructions, category, origin) in a focused dialog.
+- **Favorites** — save meals to `localStorage` from the grid or the modal; revisit them anytime, even offline.
+- **Dark mode** toggle, persisted across visits.
+- **Keyboard navigation** — arrow keys move through results, Enter/Space opens, Esc closes the modal.
+- **Resilient** — loading spinner, friendly error messages with retry, in-memory response caching, and 429 rate-limit handling.
+- **PWA** — installable, with a service worker that caches the app shell for offline use.
 
-## Technologies Used
+## Technologies
 
-- **HTML**: For structuring the content of the web page.
-- **CSS**: For styling and layout design.
-- **JavaScript**: For fetching data from an API and dynamically updating the page.
-- **Font Awesome**: For icons in the search button.
+- **HTML / CSS / JavaScript (ES modules)**
+- **Vite** for dev server and production builds
+- **Vitest** + **jsdom** for unit tests
+- **TheMealDB API** for meal data
+- **Font Awesome** for icons
 
 ## Project Structure
 
-- **index.html**: The main HTML file containing the structure of the web page.
-- **css/index.css**: CSS file for styling the web page.
-- **script/index.js**: JavaScript file for fetching data and updating the page dynamically.
+```
+├── index.html              # App shell
+├── css/index.css           # Styling (theming, modal, responsive)
+├── src/
+│   ├── main.js             # App logic, events, state
+│   ├── api.js              # API client with caching + rate-limit handling
+│   ├── storage.js          # localStorage helpers (favorites, theme)
+│   └── ui.js               # HTML rendering helpers (XSS-escaped)
+├── public/
+│   ├── sw.js               # Service worker (offline app shell)
+│   └── manifest.webmanifest
+├── test/                   # Unit tests for api, storage, ui
+├── image/                  # Static images / icons
+├── vite.config.js
+└── package.json
+```
 
 ## Usage
 
-1. Open the `index.html` file in a web browser.
+```bash
+npm install       # install dependencies
+npm run dev       # start the dev server
+npm run build     # create a production build in dist/
+npm run preview   # preview the production build
+npm test          # run the unit tests
+```
 
-2. Enter a meal name in the search bar and click the search button to find specific recipes.
+Open the URL printed by `npm run dev` (default http://localhost:5173) in a browser.
 
-3. Click the "Random" button to discover a random meal recipe.
+## Notes
 
-4. Explore the dynamically displayed meal search results.
-
-5. Click on a specific meal to view detailed information, including ingredients and instructions.
-
-## Additional Notes
-
-- This project uses the [MealDB API](https://www.themealdb.com/api.php) to fetch meal data.
-- Ensure that your internet connection is active to fetch data from the API.
+- An active internet connection is needed to fetch meal data from TheMealDB.
+- TheMealDB's free tier is rate-limited; if you hit a 429 the app shows a friendly "wait and retry" message. In-memory caching helps avoid redundant requests.
+- To use a personal API key, add `?apiKey=` support in `src/api.js`.
 
 ## Credits
 
-This project was created by Hollali Kelvin.
+Created by Hollali Kelvin.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
-
-Feel free to contribute or report issues!
+This project is licensed under the [MIT License](https://opensource.org/license/mit). Feel free to contribute or report issues!

@@ -3,69 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Search for meals from around the world and discover recipes, ingredients, and instructions powered by the TheMealDB API.">
+    <meta name="theme-color" content="#053b50">
+    <link rel="manifest" href="./manifest.webmanifest">
     <link rel="shortcut icon" href="./image/breakfast.png" type="image/x-icon">
+    <link rel="apple-touch-icon" href="./image/breakfast.png">
     <title>Foreign Meal Search</title>
-    <!--Css file-->
-    <link rel="stylesheet" href="./css/index.css">
-    <!--Font awesome cdn-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" 
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
     <div class="container">
-        <h1 class="heading">
-            Foreign Foods Search
-        </h1>
+        <header class="app-header">
+            <h1 class="heading">Foreign Foods Search</h1>
+            <button type="button" id="theme-toggle" class="icon-btn" aria-label="Toggle dark mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </header>
         <div class="meal-container">
             <form action="" class="meal_container-flex" id="submit">
-                <input type="text" id="search" placeholder="Search For Meal eg:Pizza" autocomplete="off">
-                <button class="search-btn"type="submit">
+                <label for="search" class="sr-only">Search for a meal</label>
+                <input type="text" id="search" placeholder="Search For Meal eg: Pizza" autocomplete="off">
+                <button class="search-btn" type="submit" aria-label="Search">
                     <i class="fas fa-search"></i>
                 </button>
             </form>
-            <button class="random-btn" type="submit" id="random">Random</button>
+            <button class="random-btn" type="button" id="random">Random</button>
+            <button class="random-btn" type="button" id="favorites">
+                <i class="fas fa-heart"></i> Favorites
+            </button>
         </div>
-        <p id="meal-result-heading" class="meal-result-heading">
-            
-        </p>
-        <div class,="meals-container">
-            <div id="meals" class="all-meals">
-            
-            </div>
+        <nav id="categories" class="categories" aria-label="Meal categories"></nav>
+        <p id="meal-result-heading" class="meal-result-heading" aria-live="polite"></p>
+        <div id="loader" class="loader" hidden></div>
+        <div class="meals-container">
+            <div id="meals" class="all-meals"></div>
         </div>
-        <div id="single-meal-container">
-            
-        </div>
-        
+        <nav id="pagination" class="pagination" aria-label="Pagination" hidden>
+            <button type="button" id="prev-page" class="page-btn" aria-label="Previous page">&#8592; Prev</button>
+            <span id="page-info" class="page-info"></span>
+            <button type="button" id="next-page" class="page-btn" aria-label="Next page">Next &#8594;</button>
+        </nav>
     </div>
-    <footer>
-        <div class="footer-content">
-            <h3>Social Surge </h3>
-            <p>The primary objective of Social Surge is to seamlessly integrate software engineering, graphic design, and digital marketing expertise to empower businesses with innovative and impactful digital solutions.  
-                At Social Surge, our core mission is to propel our clients forward, ensuring their digital presence not only meets but exceeds the expectations of the ever-evolving online world.</p>
-            <ul class="socials">
-                <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
-                <li><a href="#"><i class="fa fa-youtube"></i></a></li>
-                <li><a href="#"><i class="fa fa-linkedin-square"></i></a></li>
-            </ul>
+
+    <div id="modal" class="modal" hidden>
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-body">
+            <button type="button" id="modal-close" class="modal-close" aria-label="Close">&times;</button>
+            <div id="modal-body"></div>
         </div>
-        <div class="footer-bottom">
-            <p>copyright &copy; <a href="https://hollali.pxxl.space/">Social Surge</a>  </p>
-                    <div class="footer-menu">
-                    <ul class="f-menu">
-                        <li><a href="">Home</a></li>
-                        <li><a href="">About</a></li>
-                        <li><a href="">Contact</a></li>
-                        <li><a href="">Blog</a></li>
-                    </ul>
-                    </div>
-        </div>
-    </footer>
-    
-    <!--js file-->
-    <script src="./script/index.js"></script>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
 </body>
 </html>

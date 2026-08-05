@@ -1,0 +1,16 @@
+{
+  "name": "Foreign Meal Search",
+  "short_name": "Meal Search",
+  "description": "Search for meals from around the world and discover recipes, ingredients, and instructions.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fcfcfc",
+  "theme_color": "#053b50",
+  "icons": [
+    {
+      "src": "image/breakfast.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
