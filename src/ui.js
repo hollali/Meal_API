@@ -49,13 +49,20 @@ function buildIngredients(meal) {
   const ingredients = [];
   for (let i = 1; i <= 20; i++) {
     const ingredient = meal[`strIngredient${i}`];
-    if (ingredient) {
-      ingredients.push(`${ingredient} - ${meal[`strMeasure${i}`]}`);
-    } else {
+    if (!ingredient || !String(ingredient).trim()) {
       break;
     }
+    const measure = meal[`strMeasure${i}`];
+    ingredients.push({
+      name: String(ingredient).trim(),
+      measure: measure ? String(measure).trim() : '',
+    });
   }
   return ingredients;
+}
+
+function ingredientImageUrl(name) {
+  return `https://www.themealdb.com/images/ingredients/${encodeURIComponent(name)}.png`;
 }
 
 function parseTags(value) {
@@ -79,6 +86,9 @@ export function renderModalBody(meal, isFav = false) {
   const tags = parseTags(meal.strTags);
   const source = safeHttpUrl(meal.strSource);
   const video = safeHttpUrl(meal.strYoutube);
+  const extraImage = safeHttpUrl(meal.strImageSource);
+  const gallery =
+    extraImage && extraImage !== meal.strMealThumb ? [meal.strMealThumb, extraImage] : [meal.strMealThumb];
   const links = [
     source
       ? `<a class="action-link" href="${escapeHtml(source)}" target="_blank" rel="noopener noreferrer">
@@ -96,7 +106,12 @@ export function renderModalBody(meal, isFav = false) {
   return `
     <div class="single-meal">
       <div class="single-meal-media">
-        <img src="${meal.strMealThumb}" alt="${escapeHtml(meal.strMeal)}">
+        ${gallery
+          .map(
+            (src, index) =>
+              `<img src="${escapeHtml(src)}" alt="${escapeHtml(meal.strMeal)}${gallery.length > 1 ? ` (image ${index + 1})` : ''}" loading="lazy">`
+          )
+          .join('')}
       </div>
       <div class="single-meal-content">
         <div class="single-meal-info">
@@ -115,7 +130,14 @@ export function renderModalBody(meal, isFav = false) {
         <div class="main">
           <h2>Ingredients</h2>
           <ul class="ingredients">
-            ${ingredients.map((ing) => `<li>${escapeHtml(ing)}</li>`).join('')}
+            ${ingredients
+              .map(
+                (ing) => `<li class="ingredient">
+              <img class="ingredient-img" src="${escapeHtml(ingredientImageUrl(ing.name))}" alt="${escapeHtml(ing.name)}" loading="lazy" onerror="this.remove()">
+              <span class="ingredient-text">${escapeHtml(ing.name)}${ing.measure ? ` - ${escapeHtml(ing.measure)}` : ''}</span>
+            </li>`
+              )
+              .join('')}
           </ul>
           <h2>Instructions</h2>
           <p class="instructions">${escapeHtml(meal.strInstructions)}</p>
