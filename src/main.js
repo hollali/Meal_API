@@ -55,7 +55,9 @@ function applyTheme(theme) {
 function setLoading(isLoading) {
   loader.hidden = !isLoading;
   mealsEl.hidden = isLoading;
-  pagination.hidden = isLoading;
+  if (isLoading) {
+    pagination.hidden = true;
+  }
 }
 
 function setHeading(message) {
@@ -315,7 +317,7 @@ prevPageBtn.addEventListener('click', () => {
 });
 
 nextPageBtn.addEventListener('click', () => {
-  const { hasNext } = paginate(currentResults, state.page + 1, PAGE_SIZE);
+  const { hasNext } = paginate(currentResults, state.page, PAGE_SIZE);
   if (hasNext) {
     state.page += 1;
     renderPage();

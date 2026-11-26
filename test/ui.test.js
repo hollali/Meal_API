@@ -74,6 +74,11 @@ describe('paginate', () => {
     expect(result.end).toBe(20);
   });
 
+  it('reports hasNext on intermediate and hasNext=false on the last page', () => {
+    expect(paginate(items, 2, 10).hasNext).toBe(true);
+    expect(paginate(items, 3, 10).hasNext).toBe(false);
+  });
+
   it('clamps an out-of-range page to the last page', () => {
     const result = paginate(items, 99, 10);
     expect(result.page).toBe(3);
