@@ -1,3 +1,21 @@
+@media (max-width: 900px) {
+    .single-meal {
+        grid-template-columns: 1fr;
+    }
+
+    .single-meal-media {
+        position: static;
+    }
+
+    .single-meal-media img {
+        max-height: 320px;
+    }
+
+    .single-meal-media img:first-child {
+        max-height: 320px;
+    }
+}
+
 @media (max-width: 680px) {
     .meal-container {
         flex-direction: column;
@@ -8,8 +26,12 @@
         flex-basis: auto;
     }
 
+    .actions {
+        width: 100%;
+    }
+
     .actions .random-btn {
-        flex: 1;
+        flex: 1 1 0;
         justify-content: center;
     }
 
@@ -26,18 +48,14 @@
         font-size: 0.82rem;
     }
 
-    .single-meal {
-        grid-template-columns: 1fr;
-    }
-
-    .single-meal-media {
-        position: static;
-    }
-
     .single-meal-media img {
         height: auto;
         max-height: 240px;
         object-fit: cover;
+    }
+
+    .single-meal-media img:first-child {
+        max-height: 240px;
     }
 
     .modal {
@@ -53,9 +71,38 @@
     #modal-body {
         max-height: 92vh;
     }
+
+    .modal-close {
+        top: 10px;
+        right: 10px;
+    }
+
+    .categories {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+    }
+
+    .categories::-webkit-scrollbar {
+        display: none;
+    }
+
+    .category-chip {
+        flex: 0 0 auto;
+    }
 }
 
-@media (max-width: 420px) {
+@media (max-width: 480px) {
+    .container {
+        padding-left: max(12px, env(safe-area-inset-left));
+        padding-right: max(12px, env(safe-area-inset-right));
+    }
+
+    .app-header {
+        gap: 10px;
+    }
+
     .brand-mark {
         width: 44px;
         height: 44px;
@@ -67,8 +114,44 @@
         display: none;
     }
 
+    .search-btn span {
+        display: none;
+    }
+
+    .search-btn {
+        padding: 10px 14px;
+    }
+
     .all-meals {
         grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+    }
+
+    .fav-chip {
+        width: 32px;
+        height: 32px;
+    }
+
+    .page-btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+
+    .single-meal-content {
+        padding: 16px;
+    }
+
+    .single-meal h1 {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .all-meals {
+        grid-template-columns: 1fr;
+    }
+
+    .meal {
+        aspect-ratio: 4 / 3;
     }
 }
 
