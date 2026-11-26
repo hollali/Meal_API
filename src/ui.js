@@ -62,23 +62,27 @@ export function renderModalBody(meal, isFav = false) {
   const ingredients = buildIngredients(meal);
   return `
     <div class="single-meal">
-      <h1>${escapeHtml(meal.strMeal)}</h1>
-      <div class="single-meal-info">
-        ${meal.strCategory ? `<p>${escapeHtml(meal.strCategory)}</p>` : ''}
-        ${meal.strArea ? `<p>${escapeHtml(meal.strArea)}</p>` : ''}
+      <div class="single-meal-media">
+        <img src="${meal.strMealThumb}" alt="${escapeHtml(meal.strMeal)}">
       </div>
-      <img src="${meal.strMealThumb}" alt="${escapeHtml(meal.strArea)}">
-      <div class="main">
-        <h2>Ingredients</h2>
-        <ul>
-          ${ingredients.map((ing) => `<li>${escapeHtml(ing)}</li>`).join('')}
-        </ul>
-        <h2>Instructions</h2>
-        <p class="instructions">${escapeHtml(meal.strInstructions)}</p>
+      <div class="single-meal-content">
+        <div class="single-meal-info">
+          ${meal.strCategory ? `<span class="tag">${escapeHtml(meal.strCategory)}</span>` : ''}
+          ${meal.strArea ? `<span class="tag">${escapeHtml(meal.strArea)}</span>` : ''}
+        </div>
+        <h1 id="modal-title">${escapeHtml(meal.strMeal)}</h1>
+        <div class="main">
+          <h2>Ingredients</h2>
+          <ul class="ingredients">
+            ${ingredients.map((ing) => `<li>${escapeHtml(ing)}</li>`).join('')}
+          </ul>
+          <h2>Instructions</h2>
+          <p class="instructions">${escapeHtml(meal.strInstructions)}</p>
+        </div>
+        <button type="button" class="fav-btn${isFav ? ' fav-btn--active' : ''}">
+          <i class="${isFav ? 'fas' : 'far'} fa-heart"></i>
+          ${isFav ? 'Remove from favorites' : 'Save to favorites'}
+        </button>
       </div>
-      <button type="button" class="fav-btn${isFav ? ' fav-btn--active' : ''}">
-        <i class="${isFav ? 'fas' : 'far'} fa-heart"></i>
-        ${isFav ? 'Remove from favorites' : 'Save to favorites'}
-      </button>
     </div>`;
 }

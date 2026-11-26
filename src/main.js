@@ -1,4 +1,4 @@
-import '../css/index.css';
+import './styles/index.css';
 import {
   fetchMeals,
   fetchMealById,

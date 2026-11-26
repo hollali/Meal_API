@@ -1,0 +1,83 @@
+@media (max-width: 680px) {
+    .meal-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .meal_container-flex {
+        flex-basis: auto;
+    }
+
+    .actions .random-btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .all-meals {
+        grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+        gap: 12px;
+    }
+
+    .meal-info {
+        padding: 40px 11px 11px;
+    }
+
+    .meal-info h3 {
+        font-size: 0.82rem;
+    }
+
+    .single-meal {
+        grid-template-columns: 1fr;
+    }
+
+    .single-meal-media,
+    .single-meal-media img {
+        min-height: 0;
+        max-height: 240px;
+    }
+
+    .modal {
+        align-items: flex-end;
+        padding: 10px;
+    }
+
+    .modal-content {
+        max-height: 92vh;
+        border-radius: 20px;
+    }
+
+    #modal-body {
+        max-height: 92vh;
+    }
+}
+
+@media (max-width: 420px) {
+    .brand-mark {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+        border-radius: 14px;
+    }
+
+    .tagline {
+        display: none;
+    }
+
+    .all-meals {
+        grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

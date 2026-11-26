@@ -21,22 +21,29 @@ A progressive web app for searching meals and discovering recipes. Users can sea
 - **Vitest** + **jsdom** for unit tests
 - **TheMealDB API** for meal data
 - **Font Awesome** for icons
+- **Poppins** + **Inter** for typography
 
 ## Project Structure
 
 ```
 ├── index.html              # App shell
-├── css/index.css           # Styling (theming, modal, responsive)
 ├── src/
 │   ├── main.js             # App logic, events, state
 │   ├── api.js              # API client with caching + rate-limit handling
 │   ├── storage.js          # localStorage helpers (favorites, theme)
-│   └── ui.js               # HTML rendering helpers (XSS-escaped)
+│   ├── ui.js               # HTML rendering helpers (XSS-escaped)
+│   └── styles/             # Modular stylesheets
+│       ├── index.css       # Entry point (imports the layers below)
+│       ├── base.css        # Reset, design tokens, theming
+│       ├── layout.css      # App shell, header, footer
+│       ├── components.css  # Search, chips, cards, pagination
+│       ├── modal.css       # Recipe dialog
+│       └── responsive.css  # Breakpoints + reduced motion
 ├── public/
+│   ├── icons/              # App icons
 │   ├── sw.js               # Service worker (offline app shell)
 │   └── manifest.webmanifest
 ├── test/                   # Unit tests for api, storage, ui
-├── image/                  # Static images / icons
 ├── vite.config.js
 └── package.json
 ```
