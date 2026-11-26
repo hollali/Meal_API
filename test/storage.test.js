@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   getFavorites,
   getFavoriteIds,
@@ -15,6 +15,10 @@ const meal = { idMeal: '52795', strMeal: 'Chicken Handi' };
 describe('storage', () => {
   beforeEach(() => {
     localStorage.clear();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it('starts with no favorites', () => {
@@ -48,6 +52,17 @@ describe('storage', () => {
   });
 
   it('defaults the theme to light', () => {
+    expect(getTheme()).toBe('light');
+  });
+
+  it('uses the system dark preference when no theme is stored', () => {
+    vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: true }));
+    expect(getTheme()).toBe('dark');
+  });
+
+  it('prefers a stored theme over the system preference', () => {
+    setTheme('light');
+    vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: true }));
     expect(getTheme()).toBe('light');
   });
 

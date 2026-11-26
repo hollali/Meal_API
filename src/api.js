@@ -8,18 +8,26 @@ export function clearCache() {
   cache.clear();
 }
 
-async function getJSON(endpoint) {
+export function isAbortError(error) {
+  return Boolean(error) && error.name === 'AbortError';
+}
+
+async function getJSON(endpoint, { signal } = {}) {
   const now = Date.now();
   const cached = cache.get(endpoint);
   if (cached && now - cached.time < CACHE_TTL) {
     return cached.data;
   }
 
+  if (signal?.aborted) {
+    throw new DOMException('Request aborted', 'AbortError');
+  }
+
   if (inFlight.has(endpoint)) {
     return inFlight.get(endpoint);
   }
 
-  const request = fetch(`${BASE_URL}/${endpoint}`)
+  const request = fetch(`${BASE_URL}/${endpoint}`, signal ? { signal } : undefined)
     .then(async (res) => {
       if (res.status === 429) {
         throw new Error('Rate limit reached. Please wait a moment before searching again.');
@@ -31,28 +39,36 @@ async function getJSON(endpoint) {
       cache.set(endpoint, { data, time: Date.now() });
       return data;
     })
-    .finally(() => inFlight.delete(endpoint));
+    .finally(() => {
+      if (inFlight.get(endpoint) === request) {
+        inFlight.delete(endpoint);
+      }
+    });
 
   inFlight.set(endpoint, request);
   return request;
 }
 
-export function fetchMeals(query) {
-  return getJSON(`search.php?s=${encodeURIComponent(query)}`).then((data) => data.meals || []);
+export function fetchMeals(query, options) {
+  return getJSON(`search.php?s=${encodeURIComponent(query)}`, options).then(
+    (data) => data.meals || []
+  );
 }
 
-export function fetchMealById(id) {
-  return getJSON(`lookup.php?i=${id}`).then((data) => data.meals[0]);
+export function fetchMealById(id, options) {
+  return getJSON(`lookup.php?i=${id}`, options).then((data) => data.meals[0]);
 }
 
-export function fetchRandomMeal() {
-  return getJSON('random.php').then((data) => data.meals[0]);
+export function fetchRandomMeal(options) {
+  return getJSON('random.php', options).then((data) => data.meals[0]);
 }
 
-export function fetchCategories() {
-  return getJSON('list.php?c=list').then((data) => data.meals || []);
+export function fetchCategories(options) {
+  return getJSON('list.php?c=list', options).then((data) => data.meals || []);
 }
 
-export function fetchMealsByCategory(category) {
-  return getJSON(`filter.php?c=${encodeURIComponent(category)}`).then((data) => data.meals || []);
+export function fetchMealsByCategory(category, options) {
+  return getJSON(`filter.php?c=${encodeURIComponent(category)}`, options).then(
+    (data) => data.meals || []
+  );
 }

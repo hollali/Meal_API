@@ -5,6 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Search for meals from around the world and discover recipes, ingredients, and instructions powered by the TheMealDB API.">
     <meta name="theme-color" content="#0b6b62">
+    <script>
+        (function () {
+            try {
+                var stored = JSON.parse(localStorage.getItem('meal-app-theme'));
+                if (stored !== 'light' && stored !== 'dark') {
+                    stored =
+                        window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+                            ? 'dark'
+                            : 'light';
+                }
+                document.documentElement.dataset.theme = stored;
+            } catch (error) {
+                document.documentElement.dataset.theme = 'light';
+            }
+        })();
+    </script>
     <link rel="manifest" href="./manifest.webmanifest">
     <link rel="shortcut icon" href="./icons/breakfast.png" type="image/x-icon">
     <link rel="apple-touch-icon" href="./icons/breakfast.png">

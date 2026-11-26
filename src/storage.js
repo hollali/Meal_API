@@ -48,7 +48,14 @@ export function toggleFavorite(meal) {
 }
 
 export function getTheme() {
-  return read(THEME_KEY) ?? 'light';
+  const stored = read(THEME_KEY);
+  if (stored === 'light' || stored === 'dark') {
+    return stored;
+  }
+  if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  return 'light';
 }
 
 export function setTheme(theme) {

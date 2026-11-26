@@ -7,11 +7,11 @@ A progressive web app for searching meals and discovering recipes. Users can sea
 - **Search for meals** by name, with debounced live search as you type.
 - **Browse by category** via clickable filter chips (Beef, Chicken, Seafood, ...).
 - **Random meal** — one click for a surprise recipe.
-- **Recipe modal** — full details (ingredients, instructions, category, origin) in a focused dialog.
+- **Recipe modal** — full details (ingredients, instructions, category, origin, tags) in a focused dialog, with links to the original recipe and a video when available.
 - **Favorites** — save meals to `localStorage` from the grid or the modal; revisit them anytime, even offline.
-- **Dark mode** toggle, persisted across visits.
+- **Dark mode** toggle, persisted across visits and following the system preference on first load.
 - **Keyboard navigation** — arrow keys move through results, Enter/Space opens, Esc closes the modal.
-- **Resilient** — loading spinner, friendly error messages with retry, in-memory response caching, and 429 rate-limit handling.
+- **Resilient** — loading spinner, friendly error messages with retry, in-memory response caching, cancelled stale requests, and 429 rate-limit handling.
 - **PWA** — installable, with a service worker that caches the app shell for offline use.
 
 ## Technologies

@@ -6,6 +6,7 @@ import {
   fetchCategories,
   fetchMealsByCategory,
   clearCache,
+  isAbortError,
 } from '../src/api.js';
 
 function mockFetch(json, status = 200) {
@@ -78,6 +79,29 @@ describe('api', () => {
   it('throws a friendly message on rate limiting', async () => {
     mockFetch({}, 429);
     await expect(fetchMeals('pizza')).rejects.toThrow(/rate limit/i);
+  });
+
+  it('aborts an in-flight request when the signal is aborted', async () => {
+    const controller = new AbortController();
+    const fetchMock = vi.fn(
+      (url, options) =>
+        new Promise((resolve, reject) => {
+          options.signal.addEventListener('abort', () => {
+            reject(new DOMException('Aborted', 'AbortError'));
+          });
+        })
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    const promise = fetchMeals('pizza', { signal: controller.signal });
+    controller.abort();
+
+    const error = await promise.catch((reason) => reason);
+    expect(isAbortError(error)).toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('search.php'), {
+      signal: controller.signal,
+    });
   });
 
   it('throws when the response is not ok', async () => {

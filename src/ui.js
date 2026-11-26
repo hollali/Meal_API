@@ -58,8 +58,41 @@ function buildIngredients(meal) {
   return ingredients;
 }
 
+function parseTags(value) {
+  return String(value || '')
+    .split(',')
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
+function safeHttpUrl(value) {
+  try {
+    const url = new URL(String(value));
+    return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
+  } catch {
+    return '';
+  }
+}
+
 export function renderModalBody(meal, isFav = false) {
   const ingredients = buildIngredients(meal);
+  const tags = parseTags(meal.strTags);
+  const source = safeHttpUrl(meal.strSource);
+  const video = safeHttpUrl(meal.strYoutube);
+  const links = [
+    source
+      ? `<a class="action-link" href="${escapeHtml(source)}" target="_blank" rel="noopener noreferrer">
+          <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i> Original recipe
+        </a>`
+      : '',
+    video
+      ? `<a class="action-link action-link--video" href="${escapeHtml(video)}" target="_blank" rel="noopener noreferrer">
+          <i class="fab fa-youtube" aria-hidden="true"></i> Watch video
+        </a>`
+      : '',
+  ]
+    .filter(Boolean)
+    .join('');
   return `
     <div class="single-meal">
       <div class="single-meal-media">
@@ -71,6 +104,14 @@ export function renderModalBody(meal, isFav = false) {
           ${meal.strArea ? `<span class="tag">${escapeHtml(meal.strArea)}</span>` : ''}
         </div>
         <h1 id="modal-title">${escapeHtml(meal.strMeal)}</h1>
+        ${
+          tags.length
+            ? `<div class="single-meal-tags">${tags
+                .map((tag) => `<span class="tag tag--soft">${escapeHtml(tag)}</span>`)
+                .join('')}</div>`
+            : ''
+        }
+        ${links ? `<div class="single-meal-actions">${links}</div>` : ''}
         <div class="main">
           <h2>Ingredients</h2>
           <ul class="ingredients">

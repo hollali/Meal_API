@@ -5,6 +5,7 @@ import {
   fetchRandomMeal,
   fetchCategories,
   fetchMealsByCategory,
+  isAbortError,
 } from './api.js';
 import {
   getFavoriteIds,
@@ -45,6 +46,22 @@ const state = {
 let mealsById = new Map();
 let currentModalMeal = null;
 let currentResults = [];
+let listController = null;
+
+function beginListRequest() {
+  if (listController) {
+    listController.abort();
+  }
+  listController = new AbortController();
+  return listController.signal;
+}
+
+function abortListRequest() {
+  if (listController) {
+    listController.abort();
+    listController = null;
+  }
+}
 
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
@@ -121,6 +138,7 @@ async function searchMeals(query) {
   if (!item) {
     return;
   }
+  const signal = beginListRequest();
   state.lastSearch = item;
   state.currentCategory = null;
   state.viewingFavorites = false;
@@ -130,7 +148,10 @@ async function searchMeals(query) {
   setHeading('');
   setLoading(true);
   try {
-    const meals = await fetchMeals(item);
+    const meals = await fetchMeals(item, { signal });
+    if (signal.aborted) {
+      return;
+    }
     setLoading(false);
     if (meals.length === 0) {
       setHeading(`Oops !! No result for "${item}"`);
@@ -138,12 +159,16 @@ async function searchMeals(query) {
     }
     renderMeals(meals, `Search result for "${item}" (${meals.length})`);
   } catch (error) {
+    if (isAbortError(error) || signal.aborted) {
+      return;
+    }
     setLoading(false);
     handleError(error, () => searchMeals(item));
   }
 }
 
 async function showCategory(category) {
+  const signal = beginListRequest();
   state.currentCategory = category;
   state.lastSearch = null;
   state.viewingFavorites = false;
@@ -153,7 +178,10 @@ async function showCategory(category) {
   setHeading('');
   setLoading(true);
   try {
-    const meals = await fetchMealsByCategory(category);
+    const meals = await fetchMealsByCategory(category, { signal });
+    if (signal.aborted) {
+      return;
+    }
     setLoading(false);
     if (meals.length === 0) {
       setHeading(`No meals found in "${category}"`);
@@ -161,12 +189,16 @@ async function showCategory(category) {
     }
     renderMeals(meals, `${category} (${meals.length} meals)`);
   } catch (error) {
+    if (isAbortError(error) || signal.aborted) {
+      return;
+    }
     setLoading(false);
     handleError(error, () => showCategory(category));
   }
 }
 
 function showFavorites() {
+  abortListRequest();
   state.viewingFavorites = true;
   state.lastSearch = null;
   state.currentCategory = null;
@@ -195,6 +227,7 @@ async function openMeal(mealId) {
 }
 
 async function getRandomMeal() {
+  abortListRequest();
   state.lastSearch = null;
   state.currentCategory = null;
   state.viewingFavorites = false;

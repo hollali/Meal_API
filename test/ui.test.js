@@ -52,6 +52,39 @@ describe('ui', () => {
     expect(html).toContain('Step one.\nStep two.');
     expect(html).toContain('Remove from favorites');
   });
+
+  it('renders tags, source, and video links from the meal data', () => {
+    const meal = {
+      idMeal: '1',
+      strMeal: 'Test Meal',
+      strMealThumb: 'pic.jpg',
+      strInstructions: 'Cook.',
+      strTags: 'Spicy, Dinner ,',
+      strSource: 'https://example.com/recipe?x=1&y=2',
+      strYoutube: 'https://www.youtube.com/watch?v=abc123',
+    };
+    const html = renderModalBody(meal);
+    expect(html).toContain('Spicy');
+    expect(html).toContain('Dinner');
+    expect(html).toContain('https://example.com/recipe?x=1&amp;y=2');
+    expect(html).toContain('https://www.youtube.com/watch?v=abc123');
+    expect(html).toContain('Watch video');
+    expect(html).toContain('Original recipe');
+  });
+
+  it('drops unsafe source and video urls', () => {
+    const html = renderModalBody({
+      idMeal: '1',
+      strMeal: 'Test Meal',
+      strMealThumb: 'pic.jpg',
+      strInstructions: 'Cook.',
+      strSource: 'javascript:alert(1)',
+      strYoutube: 'not a valid url',
+    });
+    expect(html).not.toContain('javascript:');
+    expect(html).not.toContain('Watch video');
+    expect(html).not.toContain('Original recipe');
+  });
 });
 
 describe('paginate', () => {
