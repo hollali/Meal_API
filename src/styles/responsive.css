@@ -136,6 +136,21 @@
         font-size: 0.8rem;
     }
 
+    .pagination {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .page-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .page-info {
+        text-align: center;
+    }
+
     .single-meal-content {
         padding: 16px;
     }

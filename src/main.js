@@ -1,10 +1,10 @@
 import './styles/index.css';
 import {
-  fetchMeals,
-  fetchMealById,
-  fetchRandomMeal,
+  fetchMealsAll as fetchMeals,
+  fetchMealByIdAll as fetchMealById,
+  fetchRandomMealAll as fetchRandomMeal,
   fetchCategories,
-  fetchMealsByCategory,
+  fetchMealsByCategoryAll as fetchMealsByCategory,
   isAbortError,
 } from './api.js';
 import {
