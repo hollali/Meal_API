@@ -104,6 +104,14 @@ function setLoading(isLoading) {
   }
 }
 
+function setDetailLoading(isLoading) {
+  loader.hidden = !isLoading;
+  loader.classList.toggle('loader--inline', isLoading);
+  if (isLoading) {
+    pagination.hidden = true;
+  }
+}
+
 function setHeading(message) {
   resultHeading.textContent = message;
 }
@@ -323,16 +331,20 @@ function showFavorites({ syncUrl = true } = {}) {
 
 async function openMeal(mealId, { syncUrl = true } = {}) {
   const signal = beginDetailRequest();
-  setLoading(true);
+  setDetailLoading(true);
   try {
     const cached = mealsById.get(String(mealId)) || getFavorites()[String(mealId)];
     const meal = cached && cached.strInstructions ? cached : await fetchMealById(mealId, { signal });
     if (signal.aborted) return;
-    setLoading(false);
+    setDetailLoading(false);
+    pagination.hidden = !(currentResults.length > PAGE_SIZE);
+    renderPage();
     openModal(meal, { syncUrl });
   } catch (error) {
     if (isAbortError(error) || signal.aborted) return;
-    setLoading(false);
+    setDetailLoading(false);
+    pagination.hidden = !(currentResults.length > PAGE_SIZE);
+    renderPage();
     const cached = mealsById.get(String(mealId)) || getFavorites()[String(mealId)];
     if (cached) {
       openModal(cached, { syncUrl });
@@ -352,16 +364,16 @@ async function getRandomMeal() {
   resetFilters();
   clearResults();
   setHeading('');
-  setLoading(true);
+  setDetailLoading(true);
   updateUrl({});
   try {
     const meal = await fetchRandomMeal({ signal });
     if (signal.aborted) return;
-    setLoading(false);
+    setDetailLoading(false);
     openModal(meal);
   } catch (error) {
     if (isAbortError(error) || signal.aborted) return;
-    setLoading(false);
+    setDetailLoading(false);
     handleError(error);
   }
 }
