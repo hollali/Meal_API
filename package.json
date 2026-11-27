@@ -8,7 +8,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "lint": "node --check src/api.js && node --check src/main.js && node --check src/storage.js && node --check src/ui.js && node --check public/sw.js",
+    "check": "npm run lint && npm test && npm run build"
   },
   "keywords": [
     "meals",

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { escapeHtml, mealCard, mealCardGrid, renderModalBody, paginate, buildIngredients } from '../src/ui.js';
+import { escapeHtml, mealCard, mealCardGrid, mealSkeletonGrid, renderModalBody, paginate, buildIngredients } from '../src/ui.js';
 
 describe('ui', () => {
   it('escapes HTML in user and API data', () => {
@@ -32,6 +32,11 @@ describe('ui', () => {
     expect(html.match(/class="meal"/g)).toHaveLength(2);
     expect(html.match(/fav-chip--active/g)).toHaveLength(1);
     expect(html.match(/class="fav-chip"/g)).toHaveLength(1);
+  });
+
+  it('renders skeleton placeholders', () => {
+    const html = mealSkeletonGrid(3);
+    expect(html.match(/meal--skeleton/g)).toHaveLength(3);
   });
 
   it('collects ingredients including gaps and renders modal tools', () => {

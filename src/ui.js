@@ -46,6 +46,12 @@ export function mealCardGrid(meals, favoriteIds = []) {
   return meals.map((meal) => mealCard(meal, favorites.has(String(meal.idMeal)))).join('');
 }
 
+export function mealSkeletonGrid(count = 8) {
+  return Array.from({ length: count })
+    .map(() => '<div class="meal meal--skeleton" aria-hidden="true"><div class="meal-skeleton-shimmer"></div></div>')
+    .join('');
+}
+
 export function buildIngredients(meal) {
   const ingredients = [];
   for (let i = 1; i <= 20; i++) {

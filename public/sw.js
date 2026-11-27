@@ -1,5 +1,5 @@
-const CACHE_NAME = 'meal-app-v8';
-const APP_SHELL = ['./', './manifest.webmanifest', './icons/breakfast.png'];
+const CACHE_NAME = 'meal-app-v9';
+const APP_SHELL = ['./', './manifest.webmanifest', './icons/breakfast.png', './index.html'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -28,6 +28,19 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   const sameOrigin = url.origin === self.location.origin;
 
+  if (sameOrigin && request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put('./', clone));
+          return response;
+        })
+        .catch(() => caches.match(request).then((c) => c || caches.match('./')))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(request).then((cached) => {
       const network = fetch(request)
@@ -39,8 +52,7 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => cached);
-      if (sameOrigin) return cached || network;
-      return network.then((res) => res || cached);
+      return cached || network;
     })
   );
 });

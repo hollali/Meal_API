@@ -21,7 +21,7 @@ import {
   clearFavorites,
   replaceFavorites,
 } from './storage.js';
-import { mealCardGrid, renderModalBody, escapeHtml, paginate, buildIngredients } from './ui.js';
+import { mealCardGrid, mealSkeletonGrid, renderModalBody, escapeHtml, paginate, buildIngredients } from './ui.js';
 
 const search = document.getElementById('search');
 const submit = document.getElementById('submit');
@@ -98,8 +98,9 @@ function applyTheme(theme) {
 
 function setLoading(isLoading) {
   loader.hidden = !isLoading;
-  mealsEl.hidden = isLoading;
   if (isLoading) {
+    mealsEl.hidden = false;
+    mealsEl.innerHTML = mealSkeletonGrid(8);
     pagination.hidden = true;
   }
 }
@@ -736,23 +737,25 @@ modalBody.addEventListener('click', async (e) => {
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && !modal.hidden) {
+    const openMenu = ['#share-menu', '#shopping-menu'].find((id) => {
+      const menu = modalBody.querySelector(id);
+      return menu && !menu.hidden;
+    });
+    if (openMenu) {
+      const menu = modalBody.querySelector(openMenu);
+      const btnAction = openMenu === '#share-menu' ? 'share-menu' : 'shopping-menu';
+      const btn = modalBody.querySelector(`[data-action="${btnAction}"]`);
+      menu.hidden = true;
+      btn?.setAttribute('aria-expanded', 'false');
+      btn?.focus();
+      return;
+    }
     closeModal();
     return;
   }
-  if (!modal.hidden) {
-    ['#share-menu', '#shopping-menu'].forEach((id) => {
-      const menu = modalBody.querySelector(id);
-      const btnAction = id === '#share-menu' ? 'share-menu' : 'shopping-menu';
-      const btn = modalBody.querySelector(`[data-action="${btnAction}"]`);
-      if (menu && !menu.hidden && !e.target.closest('.single-meal-tools') && !e.target.closest(id)) {
-        menu.hidden = true;
-        btn?.setAttribute('aria-expanded', 'false');
-      }
-    });
-  }
   if (e.key === 'Tab' && !modal.hidden) {
     const focusables = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-    const list = [...focusables].filter((el) => !el.disabled && el.offsetParent !== null);
+    const list = [...focusables].filter((el) => !el.disabled && el.offsetParent !== null && !el.closest('[hidden]'));
     if (list.length === 0) return;
     const first = list[0];
     const last = list[list.length - 1];

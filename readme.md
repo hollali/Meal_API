@@ -47,9 +47,11 @@ A progressive web app for searching and discovering recipes, powered by [TheMeal
 ```bash
 npm install       # install dependencies
 npm run dev       # start the dev server
+npm run lint      # syntax-check core JS/service worker
+npm test          # run unit tests
 npm run build     # create a production build in dist/
+npm run check     # lint + test + build
 npm run preview   # preview the production build
-npm test          # run the unit tests
 ```
 
 Open the URL printed by `npm run dev` (default http://localhost:5173) in a browser.
