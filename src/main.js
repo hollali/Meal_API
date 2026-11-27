@@ -633,12 +633,16 @@ modal.addEventListener('click', (e) => {
 });
 
 modalBody.addEventListener('click', async (e) => {
-  const menu = modalBody.querySelector('#share-menu');
-  const shareBtn = modalBody.querySelector('[data-action="share-menu"]');
-  if (menu && !menu.hidden && !e.target.closest('#share-menu') && !e.target.closest('[data-action="share-menu"]')) {
-    menu.hidden = true;
-    shareBtn?.setAttribute('aria-expanded', 'false');
-  }
+  const closeMenu = (id, btnAction) => {
+    const menu = modalBody.querySelector(id);
+    const btn = modalBody.querySelector(`[data-action="${btnAction}"]`);
+    if (menu && !menu.hidden && !e.target.closest(id) && !e.target.closest(`[data-action="${btnAction}"]`)) {
+      menu.hidden = true;
+      btn?.setAttribute('aria-expanded', 'false');
+    }
+  };
+  closeMenu('#share-menu', 'share-menu');
+  closeMenu('#shopping-menu', 'shopping-menu');
   if (e.target.closest('.fav-btn')) {
     toggleModalFavorite();
     return;
@@ -660,15 +664,44 @@ modalBody.addEventListener('click', async (e) => {
     return;
   }
 
-  if (action === 'shopping') {
+  if (action === 'shopping-menu') {
+    const menu = modalBody.querySelector('#shopping-menu');
+    const expanded = tool.getAttribute('aria-expanded') === 'true';
+    tool.setAttribute('aria-expanded', String(!expanded));
+    menu.hidden = expanded;
+    return;
+  }
+
+  if (action === 'shopping-copy' || action === 'shopping-share') {
     const items = buildIngredients(currentModalMeal).map((i) => `${i.name}${i.measure ? ` - ${i.measure}` : ''}`);
     const text = `${currentModalMeal.strMeal}\n\n${items.join('\n')}`;
+    if (action === 'shopping-share' && navigator.share) {
+      try {
+        await navigator.share({ title: `${currentModalMeal.strMeal} shopping list`, text });
+        return;
+      } catch (error) {
+        if (error?.name === 'AbortError') return;
+      }
+    }
     try {
       await navigator.clipboard.writeText(text);
-      showToast('Shopping list copied');
+      showToast(action === 'shopping-share' ? 'Share unavailable; shopping list copied' : 'Shopping list copied');
     } catch {
       showToast('Could not copy shopping list');
     }
+    return;
+  }
+
+  if (action === 'shopping-download') {
+    const items = buildIngredients(currentModalMeal).map((i) => `- ${i.name}${i.measure ? ` - ${i.measure}` : ''}`);
+    const text = `${currentModalMeal.strMeal}\n\n${items.join('\n')}\n`;
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${currentModalMeal.strMeal.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-shopping-list.txt`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showToast('Shopping list downloaded');
     return;
   }
 
@@ -706,13 +739,16 @@ document.addEventListener('keydown', (e) => {
     closeModal();
     return;
   }
-  if (!modal.hidden && !e.target.closest('.single-meal-tools') && !e.target.closest('#share-menu')) {
-    const menu = modalBody.querySelector('#share-menu');
-    const btn = modalBody.querySelector('[data-action="share-menu"]');
-    if (menu && !menu.hidden) {
-      menu.hidden = true;
-      btn?.setAttribute('aria-expanded', 'false');
-    }
+  if (!modal.hidden) {
+    ['#share-menu', '#shopping-menu'].forEach((id) => {
+      const menu = modalBody.querySelector(id);
+      const btnAction = id === '#share-menu' ? 'share-menu' : 'shopping-menu';
+      const btn = modalBody.querySelector(`[data-action="${btnAction}"]`);
+      if (menu && !menu.hidden && !e.target.closest('.single-meal-tools') && !e.target.closest(id)) {
+        menu.hidden = true;
+        btn?.setAttribute('aria-expanded', 'false');
+      }
+    });
   }
   if (e.key === 'Tab' && !modal.hidden) {
     const focusables = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');

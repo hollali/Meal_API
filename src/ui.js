@@ -137,7 +137,7 @@ export function renderModalBody(meal, isFav = false) {
           <button type="button" class="tool-btn" data-action="share-menu" aria-expanded="false" aria-controls="share-menu"><i class="fas fa-share-nodes"></i> Share</button>
           <button type="button" class="tool-btn" data-action="copy" data-url="${escapeHtml(shareUrl)}"><i class="fas fa-link"></i> Copy link</button>
           <button type="button" class="tool-btn" data-action="print"><i class="fas fa-print"></i> Print</button>
-          <button type="button" class="tool-btn" data-action="shopping"><i class="fas fa-list-check"></i> Shopping list</button>
+          <button type="button" class="tool-btn" data-action="shopping-menu" aria-expanded="false" aria-controls="shopping-menu"><i class="fas fa-list-check"></i> Shopping list</button>
         </div>
         <div id="share-menu" class="share-menu" hidden>
           <button type="button" class="share-option" data-action="native-share" data-url="${escapeHtml(shareUrl)}"><i class="fas fa-share-from-square"></i> Device share</button>
@@ -146,6 +146,11 @@ export function renderModalBody(meal, isFav = false) {
           <a class="share-option" href="https://x.com/intent/tweet?text=${shareFull}" target="_blank" rel="noopener noreferrer"><i class="fab fa-x-twitter"></i> X</a>
           <a class="share-option" href="https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i> Facebook</a>
           <a class="share-option" href="mailto:?subject=${encodeURIComponent(meal.strMeal)}&body=${shareFull}"><i class="fas fa-envelope"></i> Email</a>
+        </div>
+        <div id="shopping-menu" class="share-menu" hidden>
+          <button type="button" class="share-option" data-action="shopping-copy"><i class="fas fa-copy"></i> Copy list</button>
+          <button type="button" class="share-option" data-action="shopping-share"><i class="fas fa-share-from-square"></i> Share list</button>
+          <button type="button" class="share-option" data-action="shopping-download"><i class="fas fa-download"></i> Download .txt</button>
         </div>
         <div class="main">
           <h2>Ingredients</h2>

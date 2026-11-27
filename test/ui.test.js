@@ -53,7 +53,9 @@ describe('ui', () => {
     expect(html).toContain('data-action="share-menu"');
     expect(html).toContain('data-action="native-share"');
     expect(html).toContain('wa.me');
-    expect(html).toContain('data-action="shopping"');
+    expect(html).toContain('data-action="shopping-menu"');
+    expect(html).toContain('data-action="shopping-copy"');
+    expect(html).toContain('data-action="shopping-download"');
   });
 
   it('renders tags, source, and video links from the meal data', () => {
