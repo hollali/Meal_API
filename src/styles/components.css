@@ -95,6 +95,41 @@ input:focus {
     gap: 10px;
 }
 
+.filters-row, .favorites-tools, .single-meal-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.filter-field { flex: 1 1 180px; }
+
+.filter-select, .tool-btn {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface-2);
+    color: var(--text);
+    font: inherit;
+}
+
+.filter-select { width: 100%; }
+.tool-btn { cursor: pointer; font-size: 0.82rem; font-weight: 500; }
+.tool-btn:hover { border-color: var(--accent); color: var(--primary); }
+.tool-btn--danger { color: var(--danger); }
+
+.toast {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 120;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: var(--heading);
+    color: var(--bg);
+    box-shadow: var(--shadow-md);
+}
+
 .random-btn {
     display: inline-flex;
     align-items: center;

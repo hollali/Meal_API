@@ -51,6 +51,14 @@ export function toggleFavorite(meal) {
   return true;
 }
 
+export function clearFavorites() {
+  write(FAVORITES_KEY, {});
+}
+
+export function replaceFavorites(favorites) {
+  write(FAVORITES_KEY, favorites && typeof favorites === 'object' ? favorites : {});
+}
+
 export function getTheme() {
   const stored = read(THEME_KEY);
   if (stored === 'light' || stored === 'dark') {

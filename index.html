@@ -64,7 +64,24 @@
                     </button>
                 </div>
             </div>
+            <div class="filters-row">
+                <label class="filter-field">
+                    <span class="sr-only">Filter by area</span>
+                    <select id="area-filter" class="filter-select"><option value="">All areas</option></select>
+                </label>
+                <label class="filter-field">
+                    <span class="sr-only">Filter by ingredient</span>
+                    <select id="ingredient-filter" class="filter-select"><option value="">All ingredients</option></select>
+                </label>
+                <button type="button" id="clear-filters" class="random-btn filter-clear">Clear filters</button>
+            </div>
             <nav id="categories" class="categories" aria-label="Meal categories"></nav>
+            <div class="favorites-tools">
+                <button type="button" id="export-favorites" class="tool-btn">Export favorites</button>
+                <button type="button" id="import-favorites-btn" class="tool-btn">Import favorites</button>
+                <button type="button" id="clear-favorites" class="tool-btn tool-btn--danger">Clear favorites</button>
+                <input type="file" id="import-favorites" accept="application/json" hidden>
+            </div>
         </section>
 
         <p id="meal-result-heading" class="meal-result-heading" aria-live="polite"></p>
@@ -73,6 +90,8 @@
         <div class="meals-container">
             <div id="meals" class="all-meals"></div>
         </div>
+
+        <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
 
         <nav id="pagination" class="pagination" aria-label="Pagination" hidden>
             <button type="button" id="prev-page" class="page-btn" aria-label="Previous page">&#8592; Prev</button>

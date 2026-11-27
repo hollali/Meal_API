@@ -83,8 +83,28 @@ export function fetchCategories(options) {
   return getJSON('list.php?c=list', options).then((data) => data.meals || []);
 }
 
+export function fetchAreas(options) {
+  return getJSON('list.php?a=list', options).then((data) => data.meals || []);
+}
+
+export function fetchIngredients(options) {
+  return getJSON('list.php?i=list', options).then((data) => data.meals || []);
+}
+
 export function fetchMealsByCategory(category, options) {
   return getJSON(`filter.php?c=${encodeURIComponent(category)}`, options).then(
+    (data) => data.meals || []
+  );
+}
+
+export function fetchMealsByArea(area, options) {
+  return getJSON(`filter.php?a=${encodeURIComponent(area)}`, options).then(
+    (data) => data.meals || []
+  );
+}
+
+export function fetchMealsByIngredient(ingredient, options) {
+  return getJSON(`filter.php?i=${encodeURIComponent(ingredient)}`, options).then(
     (data) => data.meals || []
   );
 }

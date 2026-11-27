@@ -13,7 +13,7 @@ export function mealCard(meal, isFav = false) {
   return `
     <div class="meal" data-mealid="${escapeHtml(meal.idMeal)}" tabindex="0" role="button"
          aria-label="View ${escapeHtml(meal.strMeal)}">
-      <img src="${escapeHtml(thumb)}" alt="${escapeHtml(meal.strMeal)}" loading="lazy" decoding="async">
+      <img src="${escapeHtml(thumb)}" alt="${escapeHtml(meal.strMeal)}" loading="lazy" decoding="async" onerror="this.style.display='none'">
       <div class="meal-info">
         <h3>${escapeHtml(meal.strMeal)}</h3>
       </div>
@@ -46,12 +46,12 @@ export function mealCardGrid(meals, favoriteIds = []) {
   return meals.map((meal) => mealCard(meal, favorites.has(String(meal.idMeal)))).join('');
 }
 
-function buildIngredients(meal) {
+export function buildIngredients(meal) {
   const ingredients = [];
   for (let i = 1; i <= 20; i++) {
     const ingredient = meal[`strIngredient${i}`];
     if (!ingredient || !String(ingredient).trim()) {
-      break;
+      continue;
     }
     const measure = meal[`strMeasure${i}`];
     ingredients.push({
@@ -105,13 +105,14 @@ export function renderModalBody(meal, isFav = false) {
   ]
     .filter(Boolean)
     .join('');
+  const shareUrl = `${location.origin}${location.pathname}#meal=${encodeURIComponent(String(meal.idMeal))}`;
   return `
     <div class="single-meal">
       <div class="single-meal-media">
         ${gallery
           .map(
             (src, index) =>
-              `<img src="${escapeHtml(src)}" alt="${escapeHtml(meal.strMeal)}${gallery.length > 1 ? ` (image ${index + 1})` : ''}" loading="lazy">`
+              `<img src="${escapeHtml(src)}" alt="${escapeHtml(meal.strMeal)}${gallery.length > 1 ? ` (image ${index + 1})` : ''}" loading="lazy" onerror="this.remove()">`
           )
           .join('')}
       </div>
@@ -129,6 +130,12 @@ export function renderModalBody(meal, isFav = false) {
             : ''
         }
         ${links ? `<div class="single-meal-actions">${links}</div>` : ''}
+        <div class="single-meal-tools">
+          <button type="button" class="tool-btn" data-action="share" data-url="${escapeHtml(shareUrl)}"><i class="fas fa-share-nodes"></i> Share</button>
+          <button type="button" class="tool-btn" data-action="copy" data-url="${escapeHtml(shareUrl)}"><i class="fas fa-link"></i> Copy link</button>
+          <button type="button" class="tool-btn" data-action="print"><i class="fas fa-print"></i> Print</button>
+          <button type="button" class="tool-btn" data-action="shopping"><i class="fas fa-list-check"></i> Shopping list</button>
+        </div>
         <div class="main">
           <h2>Ingredients</h2>
           <ul class="ingredients">
@@ -142,7 +149,7 @@ export function renderModalBody(meal, isFav = false) {
               .join('')}
           </ul>
           <h2>Instructions</h2>
-          <p class="instructions">${escapeHtml(meal.strInstructions)}</p>
+          <p class="instructions">${escapeHtml(meal.strInstructions || '')}</p>
         </div>
         <button type="button" class="fav-btn${isFav ? ' fav-btn--active' : ''}">
           <i class="${isFav ? 'fas' : 'far'} fa-heart"></i>

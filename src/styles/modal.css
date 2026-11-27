@@ -285,3 +285,11 @@
 .fav-btn--active:hover {
     background: var(--danger);
 }
+
+@media print {
+    body * { visibility: hidden !important; }
+    .modal, .modal *, #modal-body, #modal-body * { visibility: visible !important; }
+    .modal { position: static; inset: auto; background: #fff; padding: 0; display: block; }
+    .modal-content { max-height: none; overflow: visible; box-shadow: none; }
+    .modal-close, .fav-btn, .single-meal-tools { display: none !important; }
+}
