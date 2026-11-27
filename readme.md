@@ -1,6 +1,6 @@
 # Meal Search Web App
 
-A progressive web app for searching and discovering recipes, powered by [TheMealDB](https://www.themealdb.com/api.php) with [DummyJSON Recipes](https://dummyjson.com/docs/recipes) as a secondary source.
+A progressive web app for searching and discovering recipes, powered by [TheMealDB](https://www.themealdb.com/api.php), [DummyJSON Recipes](https://dummyjson.com/docs/recipes), and a bundled catalog of 45 African dishes from 19 countries (images and references from Wikipedia/Wikimedia Commons).
 
 ## Features
 
@@ -13,6 +13,7 @@ A progressive web app for searching and discovering recipes, powered by [TheMeal
 - **Dark mode** persisted and system-aware on first load.
 - **Keyboard/a11y**: grid arrow navigation, Enter/Space open, Esc close, focus restore.
 - **Resilient**: loading states, friendly retry errors, stale-request aborts, in-memory caching, multi-source fallback.
+- **African cuisine**: 45 dishes from 19 countries available in search, area filters, categories, random picks and deep links, even when other sources are offline.
 - **PWA**: installable; service worker caches app shell and same-origin assets, with network fallback for runtime requests.
 
 ## Technologies
@@ -20,7 +21,7 @@ A progressive web app for searching and discovering recipes, powered by [TheMeal
 - **HTML / CSS / JavaScript (ES modules)**
 - **Vite** build/dev
 - **Vitest + jsdom** tests
-- **TheMealDB + DummyJSON** data sources
+- **TheMealDB + DummyJSON** data sources plus a bundled African recipe catalog
 - **Font Awesome**, **Poppins + Inter**
 
 ## Project Structure
@@ -29,7 +30,9 @@ A progressive web app for searching and discovering recipes, powered by [TheMeal
 ├── index.html
 ├── src/
 │   ├── main.js             # App state, events, routing, UI orchestration
-│   ├── api.js              # TheMealDB/DummyJSON clients, cache, merge/dedupe
+│   ├── api.js              # TheMealDB/DummyJSON/African catalog clients, cache, merge/dedupe
+│   ├── africanApi.js       # queries over the bundled African dish catalog
+│   ├── data/africanMeals.js # 45 African dishes mapped to meal records
 │   ├── storage.js          # favorites/theme localStorage helpers
 │   ├── ui.js               # escaped HTML rendering helpers
 │   └── styles/             # base/layout/components/modal/responsive

@@ -65,14 +65,28 @@
                 </div>
             </div>
             <div class="filters-row">
-                <label class="filter-field">
-                    <span class="sr-only">Filter by area</span>
-                    <select id="area-filter" class="filter-select"><option value="">All areas</option></select>
-                </label>
-                <label class="filter-field">
-                    <span class="sr-only">Filter by ingredient</span>
-                    <select id="ingredient-filter" class="filter-select"><option value="">All ingredients</option></select>
-                </label>
+                <div class="filter-field">
+                    <button type="button" id="area-trigger" class="filter-trigger" aria-haspopup="dialog" aria-expanded="false" aria-controls="filter-modal">
+                        <span class="filter-trigger-icon" aria-hidden="true"><i class="fas fa-globe-africa"></i></span>
+                        <span class="filter-trigger-text">
+                            <span class="filter-trigger-label">Cuisine</span>
+                            <span class="filter-trigger-value" id="area-value">All areas</span>
+                        </span>
+                        <i class="fas fa-chevron-down filter-trigger-chevron" aria-hidden="true"></i>
+                    </button>
+                    <select id="area-filter" class="sr-only" tabindex="-1" aria-hidden="true"><option value="">All areas</option></select>
+                </div>
+                <div class="filter-field">
+                    <button type="button" id="ingredient-trigger" class="filter-trigger" aria-haspopup="dialog" aria-expanded="false" aria-controls="filter-modal">
+                        <span class="filter-trigger-icon" aria-hidden="true"><i class="fas fa-carrot"></i></span>
+                        <span class="filter-trigger-text">
+                            <span class="filter-trigger-label">Ingredient</span>
+                            <span class="filter-trigger-value" id="ingredient-value">All ingredients</span>
+                        </span>
+                        <i class="fas fa-chevron-down filter-trigger-chevron" aria-hidden="true"></i>
+                    </button>
+                    <select id="ingredient-filter" class="sr-only" tabindex="-1" aria-hidden="true"><option value="">All ingredients</option></select>
+                </div>
                 <button type="button" id="clear-filters" class="random-btn filter-clear">Clear filters</button>
             </div>
             <nav id="categories" class="categories" aria-label="Meal categories"></nav>
@@ -102,6 +116,28 @@
         <footer class="app-footer">
             <p>Powered by <a href="https://www.themealdb.com/" target="_blank" rel="noopener noreferrer">TheMealDB</a> &amp; <a href="https://dummyjson.com/" target="_blank" rel="noopener noreferrer">DummyJSON</a> &middot; Crafted by Hollali Kelvin</p>
         </footer>
+    </div>
+
+    <div id="filter-modal" class="modal filter-modal" hidden>
+        <div class="modal-content filter-modal-content" role="dialog" aria-modal="true" aria-labelledby="filter-modal-title">
+            <button type="button" id="filter-modal-close" class="modal-close" aria-label="Close">&times;</button>
+            <div class="filter-modal-inner">
+                <header class="filter-modal-header">
+                    <p class="filter-modal-eyebrow" id="filter-modal-eyebrow">Cuisines</p>
+                    <h2 id="filter-modal-title">Pick a cuisine</h2>
+                    <p class="filter-modal-subtitle" id="filter-modal-subtitle">Choose a country or region to explore its dishes.</p>
+                </header>
+                <div class="filter-search-field">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                    <input type="search" id="filter-option-search" placeholder="Search cuisines" autocomplete="off" aria-label="Search filter options">
+                </div>
+                <div id="filter-modal-options" class="filter-options" role="listbox" aria-label="Available options"></div>
+                <footer class="filter-modal-footer">
+                    <button type="button" id="filter-clear-selection" class="tool-btn">All recipes</button>
+                    <button type="button" id="filter-apply" class="search-btn filter-apply">Show recipes</button>
+                </footer>
+            </div>
+        </div>
     </div>
 
     <div id="modal" class="modal" hidden>

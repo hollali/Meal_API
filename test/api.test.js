@@ -10,6 +10,9 @@ import {
   fetchMealsByArea,
   fetchMealsByIngredient,
   fetchMealsAll,
+  fetchMealsByAreaAll,
+  fetchAreasAll,
+  fetchMealByIdAll,
   clearCache,
   isAbortError,
 } from '../src/api.js';
@@ -82,8 +85,28 @@ describe('api', () => {
       return { ok: true, status: 200, json: async () => ({ recipes: [{ id: 2, name: 'Pizza' }, { id: 3, name: 'Pie' }] }) };
     });
     vi.stubGlobal('fetch', fetchMock);
-    const meals = await fetchMealsAll('pi');
-    expect(meals.map((m) => m.strMeal)).toEqual(['Pizza', 'Pie']);
+    const meals = await fetchMealsAll('pilau');
+    expect(meals.map((m) => m.strMeal)).toContain('Pizza');
+    expect(meals.map((m) => m.strMeal)).toContain('Pilau');
+  });
+
+  it('merges African dishes when filtering by area', async () => {
+    mockFetch({ meals: null });
+    const meals = await fetchMealsByAreaAll('Nigeria');
+    expect(meals.length).toBeGreaterThan(5);
+    expect(meals.every((m) => m.strArea === 'Nigeria')).toBe(true);
+  });
+
+  it('merges African countries into the area list', async () => {
+    mockFetch({ meals: [{ strArea: 'Italian', strCountry: 'Italy' }] });
+    const areas = await fetchAreasAll();
+    expect(areas.map((a) => a.strArea)).toContain('Italy');
+    expect(areas.map((a) => a.strArea)).toContain('Nigeria');
+  });
+
+  it('looks up an African meal by its prefixed id', async () => {
+    const meal = await fetchMealByIdAll('af-1');
+    expect(meal.strMeal).toBe('Jollof Rice');
   });
 
   it('caches identical requests and only fetches once', async () => {

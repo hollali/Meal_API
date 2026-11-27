@@ -1,3 +1,12 @@
+import {
+  searchAfricanMeals,
+  getAfricanMealById,
+  getAfricanMealsByArea,
+  getAfricanMealsByCategory,
+  getAfricanAreas,
+  getRandomAfricanMeal,
+} from './africanApi.js';
+
 const BASE_URL = 'https://www.themealdb.com/api/json/v1/1';
 
 const CACHE_TTL = 5 * 60 * 1000;
@@ -187,6 +196,7 @@ export async function fetchMealsAll(query, options = {}) {
     getDummyJSON(`/recipes/search?q=${encodeURIComponent(query)}&limit=30`, options).then(
       (data) => (data.recipes || []).map(toDummyMeal)
     ),
+    Promise.resolve(searchAfricanMeals(query)),
   ]);
 
   const fulfilled = results.filter((result) => result.status === 'fulfilled');
@@ -198,6 +208,13 @@ export async function fetchMealsAll(query, options = {}) {
 }
 
 export async function fetchMealByIdAll(id, options = {}) {
+  if (String(id).startsWith('af-')) {
+    const meal = getAfricanMealById(id);
+    if (!meal) {
+      throw new Error('Meal not found.');
+    }
+    return meal;
+  }
   if (String(id).startsWith('dj-')) {
     const recipe = await getDummyJSON(`/recipes/${encodeURIComponent(String(id).slice(3))}`, options);
     return toDummyMeal(recipe);
@@ -211,6 +228,7 @@ export async function fetchMealsByCategoryAll(category, options = {}) {
     getDummyJSON(`/recipes/tag/${encodeURIComponent(category)}`, options).then((data) =>
       (data.recipes || []).map(toDummyMeal)
     ),
+    Promise.resolve(getAfricanMealsByCategory(category)),
   ]);
 
   const fulfilled = results.filter((result) => result.status === 'fulfilled');
@@ -222,7 +240,11 @@ export async function fetchMealsByCategoryAll(category, options = {}) {
 }
 
 export async function fetchRandomMealAll(options = {}) {
-  if (Math.random() < 0.5) {
+  const pick = Math.random();
+  if (pick < 0.34) {
+    return getRandomAfricanMeal();
+  }
+  if (pick < 0.67) {
     const id = Math.ceil(Math.random() * 50);
     try {
       return await fetchMealByIdAll(`dj-${id}`, options);
@@ -230,8 +252,40 @@ export async function fetchRandomMealAll(options = {}) {
       if (isAbortError(error)) {
         throw error;
       }
-      // Fall back to the primary source when the secondary source is unavailable.
     }
   }
   return fetchRandomMeal(options);
+}
+
+export async function fetchMealsByAreaAll(area, options = {}) {
+  const results = await Promise.allSettled([
+    fetchMealsByArea(area, options),
+    Promise.resolve(getAfricanMealsByArea(area)),
+  ]);
+
+  const fulfilled = results.filter((result) => result.status === 'fulfilled');
+  if (fulfilled.length === 0) {
+    throw results[0].reason;
+  }
+
+  return dedupeMeals(fulfilled.flatMap((result) => result.value));
+}
+
+export async function fetchAreasAll(options = {}) {
+  const results = await Promise.allSettled([fetchAreas(options), Promise.resolve(getAfricanAreas())]);
+  const fulfilled = results.filter((result) => result.status === 'fulfilled');
+  if (fulfilled.length === 0) {
+    throw results[0].reason;
+  }
+
+  const seen = new Set();
+  return fulfilled
+    .flatMap((result) => result.value)
+    .filter((area) => {
+      const name = area.strCountry || area.strArea;
+      if (!name || seen.has(name)) return false;
+      seen.add(name);
+      return true;
+    })
+    .map((area) => ({ ...area, strArea: area.strCountry || area.strArea }));
 }

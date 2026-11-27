@@ -286,6 +286,196 @@
     background: var(--danger);
 }
 
+.filter-modal-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 640px;
+    max-height: min(86vh, 760px);
+}
+
+.filter-modal-inner {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    max-height: inherit;
+}
+
+.filter-modal-header {
+    padding: 26px 28px 16px;
+    padding-right: 68px;
+    border-bottom: 1px solid var(--border);
+}
+
+.filter-modal-eyebrow {
+    margin-bottom: 4px;
+    color: var(--primary);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.filter-modal-header h2 {
+    font-size: clamp(1.25rem, 3vw, 1.6rem);
+    font-weight: 600;
+}
+
+.filter-modal-subtitle {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 0.84rem;
+}
+
+.filter-search-field {
+    position: relative;
+    margin: 16px 28px 0;
+}
+
+.filter-search-field i {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    color: var(--muted);
+    font-size: 0.85rem;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.filter-search-field input {
+    width: 100%;
+    padding: 11px 14px 11px 40px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface-2);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.9rem;
+}
+
+.filter-search-field input::placeholder { color: var(--muted); }
+
+.filter-search-field input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: var(--ring);
+}
+
+.filter-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: start;
+    gap: 8px;
+    min-height: 120px;
+    padding: 16px 28px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.filter-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface-2);
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+}
+
+.filter-option:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+}
+
+.filter-option[aria-selected="true"] {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.filter-option-dot {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--primary);
+    font-size: 0.7rem;
+}
+
+.filter-option[aria-selected="true"] .filter-option-dot {
+    background: var(--accent);
+    color: var(--on-accent);
+}
+
+.filter-option-copy {
+    display: grid;
+    min-width: 0;
+    flex: 1;
+}
+
+.filter-option-name {
+    overflow: hidden;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.filter-option-meta {
+    overflow: hidden;
+    color: var(--muted);
+    font-size: 0.7rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.filter-option-check {
+    flex: none;
+    color: var(--primary);
+    font-size: 0.75rem;
+    visibility: hidden;
+}
+
+.filter-option[aria-selected="true"] .filter-option-check { visibility: visible; }
+
+.filter-empty {
+    grid-column: 1 / -1;
+    padding: 32px 12px;
+    color: var(--muted);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.filter-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 28px 22px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.filter-apply {
+    flex: 0 1 190px;
+    justify-content: center;
+}
+
+@media (max-width: 560px) {
+    .filter-modal-header,
+    .filter-modal-footer { padding-left: 18px; padding-right: 18px; }
+    .filter-search-field { margin-left: 18px; margin-right: 18px; }
+    .filter-options { grid-template-columns: 1fr; padding: 14px 18px; }
+    .filter-modal-header { padding-top: 20px; }
+}
+
 @media print {
     body * { visibility: hidden !important; }
     .modal, .modal *, #modal-body, #modal-body * { visibility: visible !important; }

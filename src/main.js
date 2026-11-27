@@ -5,9 +5,9 @@ import {
   fetchRandomMealAll as fetchRandomMeal,
   fetchCategories,
   fetchMealsByCategoryAll as fetchMealsByCategory,
-  fetchAreas,
+  fetchAreasAll as fetchAreas,
   fetchIngredients,
-  fetchMealsByArea,
+  fetchMealsByAreaAll as fetchMealsByArea,
   fetchMealsByIngredient,
   isAbortError,
 } from './api.js';
@@ -37,6 +37,19 @@ const importFavoritesBtn = document.getElementById('import-favorites-btn');
 const importFavoritesInput = document.getElementById('import-favorites');
 const clearFavoritesBtn = document.getElementById('clear-favorites');
 const toastEl = document.getElementById('toast');
+const areaTrigger = document.getElementById('area-trigger');
+const areaValue = document.getElementById('area-value');
+const ingredientTrigger = document.getElementById('ingredient-trigger');
+const ingredientValue = document.getElementById('ingredient-value');
+const filterModal = document.getElementById('filter-modal');
+const filterModalClose = document.getElementById('filter-modal-close');
+const filterModalTitle = document.getElementById('filter-modal-title');
+const filterModalEyebrow = document.getElementById('filter-modal-eyebrow');
+const filterModalSubtitle = document.getElementById('filter-modal-subtitle');
+const filterOptionSearch = document.getElementById('filter-option-search');
+const filterOptionsEl = document.getElementById('filter-modal-options');
+const filterClearSelection = document.getElementById('filter-clear-selection');
+const filterApply = document.getElementById('filter-apply');
 const resultHeading = document.getElementById('meal-result-heading');
 const mealsEl = document.getElementById('meals');
 const loader = document.getElementById('loader');
@@ -66,6 +79,9 @@ let listController = null;
 let detailController = null;
 let toastTimer = null;
 let lastFocusBeforeModal = null;
+let lastFocusBeforeFilterModal = null;
+let filterKind = null;
+let pendingFilterValue = '';
 
 function beginListRequest() {
   if (listController) {
@@ -148,6 +164,104 @@ function showToast(message) {
   toastTimer = setTimeout(() => {
     toastEl.hidden = true;
   }, 2200);
+}
+
+function syncFilterLabels() {
+  areaValue.textContent = areaFilter.value || 'All areas';
+  ingredientValue.textContent = ingredientFilter.value || 'All ingredients';
+  areaTrigger.classList.toggle('is-active', Boolean(areaFilter.value));
+  ingredientTrigger.classList.toggle('is-active', Boolean(ingredientFilter.value));
+}
+
+function currentFilterSelect() {
+  return filterKind === 'area' ? areaFilter : ingredientFilter;
+}
+
+function visibleFilterOptions() {
+  const query = filterOptionSearch.value.trim().toLowerCase();
+  return [...currentFilterSelect().options].filter((option) => {
+    if (!option.value) return false;
+    return (
+      option.textContent.toLowerCase().includes(query) ||
+      (option.dataset.region || '').toLowerCase().includes(query)
+    );
+  });
+}
+
+function renderFilterOptions() {
+  const options = visibleFilterOptions();
+  if (options.length === 0) {
+    filterOptionsEl.innerHTML = '<p class="filter-empty">No matches. Try another search.</p>';
+    return;
+  }
+  const icon = filterKind === 'area' ? 'fa-globe-africa' : 'fa-carrot';
+  const fallbackMeta = filterKind === 'area' ? 'Country or region' : 'Ingredient';
+  filterOptionsEl.innerHTML = options
+    .map(
+      (option) => `
+        <button type="button" class="filter-option" role="option" data-value="${escapeHtml(option.value)}"
+                aria-selected="${option.value === pendingFilterValue}">
+          <span class="filter-option-dot"><i class="fas ${icon}" aria-hidden="true"></i></span>
+          <span class="filter-option-copy">
+            <span class="filter-option-name">${escapeHtml(option.textContent)}</span>
+            <span class="filter-option-meta">${escapeHtml(option.dataset.region || fallbackMeta)}</span>
+          </span>
+          <i class="fas fa-check filter-option-check" aria-hidden="true"></i>
+        </button>`
+    )
+    .join('');
+}
+
+function updateSelectedFilterOption() {
+  filterOptionsEl.querySelectorAll('.filter-option').forEach((button) => {
+    button.setAttribute('aria-selected', String(button.dataset.value === pendingFilterValue));
+  });
+}
+
+function openFilterModal(kind) {
+  filterKind = kind;
+  const select = currentFilterSelect();
+  pendingFilterValue = select.value;
+  const isArea = kind === 'area';
+  filterModalEyebrow.textContent = isArea ? 'Cuisines' : 'Ingredients';
+  filterModalTitle.textContent = isArea ? 'Pick a cuisine' : 'Pick an ingredient';
+  filterModalSubtitle.textContent = isArea
+    ? 'Choose a country or region to explore its dishes.'
+    : 'Choose an ingredient to find recipes that use it.';
+  filterOptionSearch.placeholder = isArea ? 'Search cuisines' : 'Search ingredients';
+  filterOptionSearch.value = '';
+  renderFilterOptions();
+  filterModal.hidden = false;
+  (isArea ? areaTrigger : ingredientTrigger).setAttribute('aria-expanded', 'true');
+  lastFocusBeforeFilterModal = document.activeElement;
+  filterOptionSearch.focus();
+}
+
+function closeFilterModal() {
+  if (filterModal.hidden) return;
+  filterModal.hidden = true;
+  areaTrigger.setAttribute('aria-expanded', 'false');
+  ingredientTrigger.setAttribute('aria-expanded', 'false');
+  lastFocusBeforeFilterModal?.focus();
+}
+
+function applyFilterSelection() {
+  const options = visibleFilterOptions();
+  if (!pendingFilterValue && options.length === 1) {
+    pendingFilterValue = options[0].value;
+  }
+  const select = currentFilterSelect();
+  select.value = pendingFilterValue;
+  closeFilterModal();
+  select.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
+function clearAllFilters() {
+  resetFilters();
+  clearResults();
+  setHeading('Filters cleared.');
+  updateUrl({});
+  syncFilterLabels();
 }
 
 function updateUrl(params, { replace = false } = {}) {
@@ -265,6 +379,7 @@ async function showArea(area, { syncUrl = true } = {}) {
   state.page = 1;
   resetFilters({ keepArea: true });
   areaFilter.value = area;
+  syncFilterLabels();
   clearResults();
   setHeading('');
   setLoading(true);
@@ -293,6 +408,7 @@ async function showIngredient(ingredient, { syncUrl = true } = {}) {
   state.page = 1;
   resetFilters({ keepIngredient: true });
   ingredientFilter.value = ingredient;
+  syncFilterLabels();
   clearResults();
   setHeading('');
   setLoading(true);
@@ -392,6 +508,7 @@ function resetFilters({ keepCategory = false, keepArea = false, keepIngredient =
   if (!keepCategory) setCategoryActive(null);
   if (!keepArea) areaFilter.value = '';
   if (!keepIngredient) ingredientFilter.value = '';
+  syncFilterLabels();
 }
 
 async function loadCategories() {
@@ -414,17 +531,24 @@ async function loadFilters() {
     const [areas, ingredients] = await Promise.all([fetchAreas(), fetchIngredients()]);
     areaFilter.innerHTML =
       '<option value="">All areas</option>' +
-      areas.map((a) => `<option value="${escapeHtml(a.strArea)}">${escapeHtml(a.strArea)}</option>`).join('');
+      areas
+        .map(
+          (a) =>
+            `<option value="${escapeHtml(a.strArea)}" data-region="${escapeHtml(a.strRegion || '')}">${escapeHtml(a.strArea)}</option>`
+        )
+        .join('');
     ingredientFilter.innerHTML =
       '<option value="">All ingredients</option>' +
       ingredients
         .slice(0, 120)
         .map((i) => `<option value="${escapeHtml(i.strIngredient)}">${escapeHtml(i.strIngredient)}</option>`)
         .join('');
+    syncFilterLabels();
   } catch (error) {
     console.error('Failed to load filters', error);
   }
 }
+
 
 function openModal(meal, { syncUrl = true } = {}) {
   currentModalMeal = meal;
@@ -513,22 +637,43 @@ random.addEventListener('click', getRandomMeal);
 
 favoritesBtn.addEventListener('click', () => showFavorites());
 
+areaTrigger.addEventListener('click', () => openFilterModal('area'));
+ingredientTrigger.addEventListener('click', () => openFilterModal('ingredient'));
+filterModalClose.addEventListener('click', closeFilterModal);
+filterOptionsEl.addEventListener('click', (e) => {
+  const option = e.target.closest('.filter-option');
+  if (!option) return;
+  pendingFilterValue = pendingFilterValue === option.dataset.value ? '' : option.dataset.value;
+  updateSelectedFilterOption();
+});
+filterOptionSearch.addEventListener('input', renderFilterOptions);
+filterOptionSearch.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter') return;
+  e.preventDefault();
+  applyFilterSelection();
+});
+filterApply.addEventListener('click', applyFilterSelection);
+filterClearSelection.addEventListener('click', () => {
+  closeFilterModal();
+  clearAllFilters();
+});
+filterModal.addEventListener('click', (e) => {
+  if (e.target === filterModal) closeFilterModal();
+});
+
 areaFilter.addEventListener('change', (e) => {
   const value = e.target.value;
+  syncFilterLabels();
   if (value) showArea(value);
 });
 
 ingredientFilter.addEventListener('change', (e) => {
   const value = e.target.value;
+  syncFilterLabels();
   if (value) showIngredient(value);
 });
 
-clearFiltersBtn.addEventListener('click', () => {
-  resetFilters();
-  clearResults();
-  setHeading('Filters cleared.');
-  updateUrl({});
-});
+clearFiltersBtn.addEventListener('click', clearAllFilters);
 
 exportFavoritesBtn.addEventListener('click', () => {
   const blob = new Blob([JSON.stringify(getFavorites(), null, 2)], { type: 'application/json' });
@@ -736,6 +881,28 @@ modalBody.addEventListener('click', async (e) => {
 });
 
 document.addEventListener('keydown', (e) => {
+  if (!filterModal.hidden) {
+    if (e.key === 'Escape') {
+      closeFilterModal();
+      return;
+    }
+    if (e.key === 'Tab') {
+      const focusables = [
+        ...filterModal.querySelectorAll('button, input, [tabindex]:not([tabindex="-1"])'),
+      ].filter((el) => !el.disabled && el.offsetParent !== null && !el.closest('[hidden]'));
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+    return;
+  }
   if (e.key === 'Escape' && !modal.hidden) {
     const openMenu = ['#share-menu', '#shopping-menu'].find((id) => {
       const menu = modalBody.querySelector(id);

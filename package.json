@@ -1,7 +1,7 @@
 {
   "name": "meal_api",
   "version": "1.1.0",
-  "description": "Progressive web app for discovering recipes with search, filters, favorites, deep links, and TheMealDB + DummyJSON data sources.",
+  "description": "Progressive web app for discovering recipes with search, filters, favorites, deep links, and TheMealDB + DummyJSON data sources plus a bundled African recipe catalog.",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,7 +9,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "lint": "node --check src/api.js && node --check src/main.js && node --check src/storage.js && node --check src/ui.js && node --check public/sw.js",
+    "lint": "node --check src/api.js && node --check src/africanApi.js && node --check src/data/africanMeals.js && node --check src/main.js && node --check src/storage.js && node --check src/ui.js && node --check public/sw.js",
     "check": "npm run lint && npm test && npm run build"
   },
   "keywords": [
