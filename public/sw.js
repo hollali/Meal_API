@@ -1,4 +1,4 @@
-const CACHE_NAME = 'meal-app-v6';
+const CACHE_NAME = 'meal-app-v7';
 const APP_SHELL = ['./', './manifest.webmanifest', './icons/breakfast.png'];
 
 self.addEventListener('install', (event) => {

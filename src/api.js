@@ -3,6 +3,9 @@ const BASE_URL = 'https://www.themealdb.com/api/json/v1/1';
 const CACHE_TTL = 5 * 60 * 1000;
 const cache = new Map();
 const inFlight = new Map();
+const DUMMYJSON_BASE = 'https://dummyjson.com';
+const dummyCache = new Map();
+const dummyInFlight = new Map();
 
 export function clearCache() {
   cache.clear();
@@ -57,11 +60,23 @@ export function fetchMeals(query, options) {
 }
 
 export function fetchMealById(id, options) {
-  return getJSON(`lookup.php?i=${id}`, options).then((data) => data.meals[0]);
+  return getJSON(`lookup.php?i=${id}`, options).then((data) => {
+    const meal = data.meals?.[0];
+    if (!meal) {
+      throw new Error('Meal not found.');
+    }
+    return meal;
+  });
 }
 
 export function fetchRandomMeal(options) {
-  return getJSON('random.php', options).then((data) => data.meals[0]);
+  return getJSON('random.php', options).then((data) => {
+    const meal = data.meals?.[0];
+    if (!meal) {
+      throw new Error('Meal not found.');
+    }
+    return meal;
+  });
 }
 
 export function fetchCategories(options) {
@@ -73,10 +88,6 @@ export function fetchMealsByCategory(category, options) {
     (data) => data.meals || []
   );
 }
-
-const DUMMYJSON_BASE = 'https://dummyjson.com';
-const dummyCache = new Map();
-const dummyInFlight = new Map();
 
 async function getDummyJSON(endpoint, { signal } = {}) {
   const cacheKey = `dj:${endpoint}`;
@@ -113,9 +124,7 @@ async function getDummyJSON(endpoint, { signal } = {}) {
   return request;
 }
 
-export function clearDummyCache() {
-  dummyCache.clear();
-}
+
 
 function toDummyMeal(recipe) {
   const meal = {
@@ -198,6 +207,9 @@ export async function fetchRandomMealAll(options = {}) {
     try {
       return await fetchMealByIdAll(`dj-${id}`, options);
     } catch (error) {
+      if (isAbortError(error)) {
+        throw error;
+      }
       // Fall back to the primary source when the secondary source is unavailable.
     }
   }

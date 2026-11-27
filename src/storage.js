@@ -10,7 +10,11 @@ function read(key) {
 }
 
 function write(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Ignore storage write failures (private mode/quota).
+  }
 }
 
 export function getFavorites() {

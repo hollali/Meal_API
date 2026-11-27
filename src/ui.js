@@ -9,10 +9,11 @@ export function escapeHtml(value) {
 
 export function mealCard(meal, isFav = false) {
   const heart = isFav ? 'fas' : 'far';
+  const thumb = safeHttpUrl(meal.strMealThumb);
   return `
     <div class="meal" data-mealid="${escapeHtml(meal.idMeal)}" tabindex="0" role="button"
          aria-label="View ${escapeHtml(meal.strMeal)}">
-      <img src="${meal.strMealThumb}" alt="${escapeHtml(meal.strMeal)}" loading="lazy" decoding="async">
+      <img src="${escapeHtml(thumb)}" alt="${escapeHtml(meal.strMeal)}" loading="lazy" decoding="async">
       <div class="meal-info">
         <h3>${escapeHtml(meal.strMeal)}</h3>
       </div>
@@ -73,6 +74,7 @@ function parseTags(value) {
 }
 
 function safeHttpUrl(value) {
+  if (!value) return '';
   try {
     const url = new URL(String(value));
     return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
@@ -86,9 +88,9 @@ export function renderModalBody(meal, isFav = false) {
   const tags = parseTags(meal.strTags);
   const source = safeHttpUrl(meal.strSource);
   const video = safeHttpUrl(meal.strYoutube);
+  const thumb = safeHttpUrl(meal.strMealThumb);
   const extraImage = safeHttpUrl(meal.strImageSource);
-  const gallery =
-    extraImage && extraImage !== meal.strMealThumb ? [meal.strMealThumb, extraImage] : [meal.strMealThumb];
+  const gallery = [thumb, extraImage].filter((src, index, arr) => src && arr.indexOf(src) === index);
   const links = [
     source
       ? `<a class="action-link" href="${escapeHtml(source)}" target="_blank" rel="noopener noreferrer">

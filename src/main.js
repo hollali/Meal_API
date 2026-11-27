@@ -47,6 +47,7 @@ let mealsById = new Map();
 let currentModalMeal = null;
 let currentResults = [];
 let listController = null;
+let detailController = null;
 
 function beginListRequest() {
   if (listController) {
@@ -61,6 +62,14 @@ function abortListRequest() {
     listController.abort();
     listController = null;
   }
+}
+
+function beginDetailRequest() {
+  if (detailController) {
+    detailController.abort();
+  }
+  detailController = new AbortController();
+  return detailController.signal;
 }
 
 function applyTheme(theme) {
@@ -215,12 +224,19 @@ function showFavorites() {
 }
 
 async function openMeal(mealId) {
+  const signal = beginDetailRequest();
   setLoading(true);
   try {
-    const meal = await fetchMealById(mealId);
+    const meal = await fetchMealById(mealId, { signal });
+    if (signal.aborted) {
+      return;
+    }
     setLoading(false);
     openModal(meal);
   } catch (error) {
+    if (isAbortError(error) || signal.aborted) {
+      return;
+    }
     setLoading(false);
     handleError(error);
   }
@@ -228,6 +244,7 @@ async function openMeal(mealId) {
 
 async function getRandomMeal() {
   abortListRequest();
+  const signal = beginDetailRequest();
   state.lastSearch = null;
   state.currentCategory = null;
   state.viewingFavorites = false;
@@ -237,10 +254,16 @@ async function getRandomMeal() {
   setHeading('');
   setLoading(true);
   try {
-    const meal = await fetchRandomMeal();
+    const meal = await fetchRandomMeal({ signal });
+    if (signal.aborted) {
+      return;
+    }
     setLoading(false);
     openModal(meal);
   } catch (error) {
+    if (isAbortError(error) || signal.aborted) {
+      return;
+    }
     setLoading(false);
     handleError(error);
   }

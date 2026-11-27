@@ -10,10 +10,10 @@ describe('ui', () => {
   });
 
   it('renders a meal card with escaped fields', () => {
-    const html = mealCard({ idMeal: '1', strMeal: '<b>Pizza</b>', strMealThumb: 'pic.jpg' });
+    const html = mealCard({ idMeal: '1', strMeal: '<b>Pizza</b>', strMealThumb: 'https://example.com/pic.jpg' });
     expect(html).toContain('data-mealid="1"');
     expect(html).toContain('&lt;b&gt;Pizza&lt;/b&gt;');
-    expect(html).toContain('pic.jpg');
+    expect(html).toContain('https://example.com/pic.jpg');
     expect(html).toContain('tabindex="0"');
   });
 
