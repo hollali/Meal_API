@@ -35,6 +35,9 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Build
+        run: npm run build
+
   build-and-deploy:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest

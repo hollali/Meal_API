@@ -1,4 +1,4 @@
-const CACHE_NAME = 'meal-app-v7';
+const CACHE_NAME = 'meal-app-v8';
 const APP_SHELL = ['./', './manifest.webmanifest', './icons/breakfast.png'];
 
 self.addEventListener('install', (event) => {
@@ -23,22 +23,24 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  if (request.method !== 'GET' || !request.url.startsWith(self.location.origin)) {
-    return;
-  }
+  if (request.method !== 'GET') return;
+
+  const url = new URL(request.url);
+  const sameOrigin = url.origin === self.location.origin;
 
   event.respondWith(
     caches.match(request).then((cached) => {
       const network = fetch(request)
         .then((response) => {
-          if (response.ok && response.type === 'basic') {
+          if (response.ok && (response.type === 'basic' || response.type === 'cors')) {
             const clone = response.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
           }
           return response;
         })
         .catch(() => cached);
-      return cached || network;
+      if (sameOrigin) return cached || network;
+      return network.then((res) => res || cached);
     })
   );
 });

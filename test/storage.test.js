@@ -6,6 +6,8 @@ import {
   addFavorite,
   removeFavorite,
   toggleFavorite,
+  clearFavorites,
+  replaceFavorites,
   getTheme,
   setTheme,
 } from '../src/storage.js';
@@ -49,6 +51,14 @@ describe('storage', () => {
   it('persists across reads (localStorage round-trip)', () => {
     addFavorite(meal);
     expect(JSON.parse(localStorage.getItem('meal-app-favorites'))['52795'].idMeal).toBe('52795');
+  });
+
+  it('clears and replaces favorites', () => {
+    addFavorite(meal);
+    clearFavorites();
+    expect(getFavoriteIds()).toEqual([]);
+    replaceFavorites({ '1': { idMeal: '1', strMeal: 'A' } });
+    expect(getFavoriteIds()).toEqual(['1']);
   });
 
   it('defaults the theme to light', () => {

@@ -325,13 +325,20 @@ async function openMeal(mealId, { syncUrl = true } = {}) {
   const signal = beginDetailRequest();
   setLoading(true);
   try {
-    const meal = await fetchMealById(mealId, { signal });
+    const cached = mealsById.get(String(mealId)) || getFavorites()[String(mealId)];
+    const meal = cached && cached.strInstructions ? cached : await fetchMealById(mealId, { signal });
     if (signal.aborted) return;
     setLoading(false);
     openModal(meal, { syncUrl });
   } catch (error) {
     if (isAbortError(error) || signal.aborted) return;
     setLoading(false);
+    const cached = mealsById.get(String(mealId)) || getFavorites()[String(mealId)];
+    if (cached) {
+      openModal(cached, { syncUrl });
+      showToast('Showing saved meal details (offline).');
+      return;
+    }
     handleError(error);
   }
 }

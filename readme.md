@@ -1,50 +1,44 @@
 # Meal Search Web App
 
-A progressive web app for searching meals and discovering recipes. Users can search by name, browse by category, roll a random recipe, and save favorites — all powered by the [TheMealDB API](https://www.themealdb.com/api.php).
+A progressive web app for searching and discovering recipes, powered by [TheMealDB](https://www.themealdb.com/api.php) with [DummyJSON Recipes](https://dummyjson.com/docs/recipes) as a secondary source.
 
 ## Features
 
-- **Search for meals** by name, with debounced live search as you type.
-- **Browse by category** via clickable filter chips (Beef, Chicken, Seafood, ...).
-- **Random meal** — one click for a surprise recipe.
-- **Recipe modal** — full details (ingredients, instructions, category, origin, tags) in a focused dialog, with links to the original recipe and a video when available.
-- **Favorites** — save meals to `localStorage` from the grid or the modal; revisit them anytime, even offline.
-- **Dark mode** toggle, persisted across visits and following the system preference on first load.
-- **Keyboard navigation** — arrow keys move through results, Enter/Space opens, Esc closes the modal.
-- **Resilient** — loading spinner, friendly error messages with retry, in-memory response caching, cancelled stale requests, and 429 rate-limit handling.
-- **PWA** — installable, with a service worker that caches the app shell for offline use.
+- **Search** by name with debounced live search.
+- **Browse/filters** by category chips, area, and ingredient.
+- **Random meal** from combined sources.
+- **Deep links** for search/category/area/ingredient/favorites and `#meal=<id>` modal links; browser back/forward supported.
+- **Recipe modal** with ingredients, instructions, tags, external links, share/copy link, print, shopping list copy, and focus trap.
+- **Favorites+** save/remove, export/import JSON, clear all, persisted in `localStorage`.
+- **Dark mode** persisted and system-aware on first load.
+- **Keyboard/a11y**: grid arrow navigation, Enter/Space open, Esc close, focus restore.
+- **Resilient**: loading states, friendly retry errors, stale-request aborts, in-memory caching, multi-source fallback.
+- **PWA**: installable; service worker caches app shell and same-origin assets, with network fallback for runtime requests.
 
 ## Technologies
 
 - **HTML / CSS / JavaScript (ES modules)**
-- **Vite** for dev server and production builds
-- **Vitest** + **jsdom** for unit tests
-- **TheMealDB API** for meal data
-- **Font Awesome** for icons
-- **Poppins** + **Inter** for typography
+- **Vite** build/dev
+- **Vitest + jsdom** tests
+- **TheMealDB + DummyJSON** data sources
+- **Font Awesome**, **Poppins + Inter**
 
 ## Project Structure
 
 ```
-├── index.html              # App shell
+├── index.html
 ├── src/
-│   ├── main.js             # App logic, events, state
-│   ├── api.js              # API client with caching + rate-limit handling
-│   ├── storage.js          # localStorage helpers (favorites, theme)
-│   ├── ui.js               # HTML rendering helpers (XSS-escaped)
-│   └── styles/             # Modular stylesheets
-│       ├── index.css       # Entry point (imports the layers below)
-│       ├── base.css        # Reset, design tokens, theming
-│       ├── layout.css      # App shell, header, footer
-│       ├── components.css  # Search, chips, cards, pagination
-│       ├── modal.css       # Recipe dialog
-│       └── responsive.css  # Breakpoints + reduced motion
+│   ├── main.js             # App state, events, routing, UI orchestration
+│   ├── api.js              # TheMealDB/DummyJSON clients, cache, merge/dedupe
+│   ├── storage.js          # favorites/theme localStorage helpers
+│   ├── ui.js               # escaped HTML rendering helpers
+│   └── styles/             # base/layout/components/modal/responsive
 ├── public/
-│   ├── icons/              # App icons
-│   ├── sw.js               # Service worker (offline app shell)
+│   ├── icons/
+│   ├── sw.js               # service worker
 │   └── manifest.webmanifest
-├── test/                   # Unit tests for api, storage, ui
-├── vite.config.js
+├── test/                   # api, storage, ui tests
+├── .github/workflows/deploy.yml
 └── package.json
 ```
 
@@ -62,9 +56,9 @@ Open the URL printed by `npm run dev` (default http://localhost:5173) in a brows
 
 ## Notes
 
-- An active internet connection is needed to fetch meal data from TheMealDB.
-- TheMealDB's free tier is rate-limited; if you hit a 429 the app shows a friendly "wait and retry" message. In-memory caching helps avoid redundant requests.
-- To use a personal API key, add `?apiKey=` support in `src/api.js`.
+- Internet is required for fresh recipe data; favorites and app shell can work offline after first load.
+- TheMealDB can return 429; the app shows a friendly retry message and uses in-memory caching.
+- API sources are merged and deduped by meal name where applicable; DummyJSON items use `dj-<id>` IDs.
 
 ## Credits
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { escapeHtml, mealCard, mealCardGrid, renderModalBody, paginate } from '../src/ui.js';
+import { escapeHtml, mealCard, mealCardGrid, renderModalBody, paginate, buildIngredients } from '../src/ui.js';
 
 describe('ui', () => {
   it('escapes HTML in user and API data', () => {
@@ -34,23 +34,24 @@ describe('ui', () => {
     expect(html.match(/class="fav-chip"/g)).toHaveLength(1);
   });
 
-  it('collects up to 20 ingredients into the modal body', () => {
+  it('collects ingredients including gaps and renders modal tools', () => {
     const meal = {
       idMeal: '1',
       strMeal: 'Test Meal',
       strCategory: 'Beef',
       strArea: 'USA',
-      strMealThumb: 'pic.jpg',
+      strMealThumb: 'https://example.com/pic.jpg',
       strInstructions: 'Step one.\nStep two.',
-      strIngredient1: 'Flour',
-      strMeasure1: '2 cups',
-      strIngredient2: '',
+      strIngredient1: '',
+      strIngredient2: 'Flour',
+      strMeasure2: '2 cups',
     };
+    expect(buildIngredients(meal)).toEqual([{ name: 'Flour', measure: '2 cups' }]);
     const html = renderModalBody(meal, true);
-    expect(html).toContain('Test Meal');
     expect(html).toContain('Flour - 2 cups');
-    expect(html).toContain('Step one.\nStep two.');
     expect(html).toContain('Remove from favorites');
+    expect(html).toContain('data-action="share"');
+    expect(html).toContain('data-action="shopping"');
   });
 
   it('renders tags, source, and video links from the meal data', () => {

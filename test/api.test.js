@@ -4,7 +4,12 @@ import {
   fetchMealById,
   fetchRandomMeal,
   fetchCategories,
+  fetchAreas,
+  fetchIngredients,
   fetchMealsByCategory,
+  fetchMealsByArea,
+  fetchMealsByIngredient,
+  fetchMealsAll,
   clearCache,
   isAbortError,
 } from '../src/api.js';
@@ -51,17 +56,34 @@ describe('api', () => {
     expect(meal.strMeal).toBe('Anything');
   });
 
-  it('lists categories', async () => {
-    mockFetch({ meals: [{ strCategory: 'Beef' }, { strCategory: 'Chicken' }] });
-    const categories = await fetchCategories();
-    expect(categories).toHaveLength(2);
-    expect(categories[1].strCategory).toBe('Chicken');
+  it('lists categories, areas, and ingredients', async () => {
+    mockFetch({ meals: [{ strCategory: 'Beef' }] });
+    expect((await fetchCategories())[0].strCategory).toBe('Beef');
+    mockFetch({ meals: [{ strArea: 'Italian' }] });
+    expect((await fetchAreas())[0].strArea).toBe('Italian');
+    mockFetch({ meals: [{ strIngredient: 'Chicken' }] });
+    expect((await fetchIngredients())[0].strIngredient).toBe('Chicken');
   });
 
-  it('filters meals by category', async () => {
+  it('filters meals by category, area, and ingredient', async () => {
     mockFetch({ meals: [{ idMeal: '2', strMeal: 'Burger' }] });
-    const meals = await fetchMealsByCategory('Beef');
-    expect(meals).toHaveLength(1);
+    expect((await fetchMealsByCategory('Beef'))).toHaveLength(1);
+    mockFetch({ meals: [{ idMeal: '3', strMeal: 'Pasta' }] });
+    expect((await fetchMealsByArea('Italian'))).toHaveLength(1);
+    mockFetch({ meals: [{ idMeal: '4', strMeal: 'Soup' }] });
+    expect((await fetchMealsByIngredient('Chicken'))).toHaveLength(1);
+  });
+
+  it('merges multi-source search and dedupes by name', async () => {
+    const fetchMock = vi.fn(async (url) => {
+      if (String(url).includes('themealdb.com')) {
+        return { ok: true, status: 200, json: async () => ({ meals: [{ idMeal: '1', strMeal: 'Pizza' }] }) };
+      }
+      return { ok: true, status: 200, json: async () => ({ recipes: [{ id: 2, name: 'Pizza' }, { id: 3, name: 'Pie' }] }) };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const meals = await fetchMealsAll('pi');
+    expect(meals.map((m) => m.strMeal)).toEqual(['Pizza', 'Pie']);
   });
 
   it('caches identical requests and only fetches once', async () => {

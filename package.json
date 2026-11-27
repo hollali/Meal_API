@@ -1,7 +1,7 @@
 {
   "name": "meal_api",
   "version": "1.1.0",
-  "description": "Search for meals from around the world and discover recipes, ingredients, and instructions, powered by the TheMealDB API.",
+  "description": "Progressive web app for discovering recipes with search, filters, favorites, deep links, and TheMealDB + DummyJSON data sources.",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,6 +14,7 @@
     "meals",
     "recipes",
     "themealdb",
+    "dummyjson",
     "pwa",
     "vite"
   ],
