@@ -633,6 +633,12 @@ modal.addEventListener('click', (e) => {
 });
 
 modalBody.addEventListener('click', async (e) => {
+  const menu = modalBody.querySelector('#share-menu');
+  const shareBtn = modalBody.querySelector('[data-action="share-menu"]');
+  if (menu && !menu.hidden && !e.target.closest('#share-menu') && !e.target.closest('[data-action="share-menu"]')) {
+    menu.hidden = true;
+    shareBtn?.setAttribute('aria-expanded', 'false');
+  }
   if (e.target.closest('.fav-btn')) {
     toggleModalFavorite();
     return;
@@ -640,10 +646,20 @@ modalBody.addEventListener('click', async (e) => {
   const tool = e.target.closest('[data-action]');
   if (!tool || !currentModalMeal) return;
   const action = tool.dataset.action;
+
+  if (action === 'share-menu') {
+    const menu = modalBody.querySelector('#share-menu');
+    const expanded = tool.getAttribute('aria-expanded') === 'true';
+    tool.setAttribute('aria-expanded', String(!expanded));
+    menu.hidden = expanded;
+    return;
+  }
+
   if (action === 'print') {
     window.print();
     return;
   }
+
   if (action === 'shopping') {
     const items = buildIngredients(currentModalMeal).map((i) => `${i.name}${i.measure ? ` - ${i.measure}` : ''}`);
     const text = `${currentModalMeal.strMeal}\n\n${items.join('\n')}`;
@@ -655,21 +671,32 @@ modalBody.addEventListener('click', async (e) => {
     }
     return;
   }
-  if (action === 'copy' || action === 'share') {
+
+  if (action === 'copy') {
+    try {
+      await navigator.clipboard.writeText(tool.dataset.url);
+      showToast('Link copied');
+    } catch {
+      showToast('Could not copy link');
+    }
+    return;
+  }
+
+  if (action === 'native-share') {
     const url = tool.dataset.url;
-    if (action === 'share' && navigator.share) {
+    if (navigator.share) {
       try {
-        await navigator.share({ title: currentModalMeal.strMeal, url });
+        await navigator.share({ title: currentModalMeal.strMeal, text: `Check out ${currentModalMeal.strMeal}`, url });
         return;
-      } catch {
-        // fall through to copy
+      } catch (error) {
+        if (error?.name === 'AbortError') return;
       }
     }
     try {
       await navigator.clipboard.writeText(url);
-      showToast('Link copied');
+      showToast('Share unavailable; link copied');
     } catch {
-      showToast('Could not copy link');
+      showToast('Share unavailable');
     }
   }
 });
@@ -678,6 +705,14 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && !modal.hidden) {
     closeModal();
     return;
+  }
+  if (!modal.hidden && !e.target.closest('.single-meal-tools') && !e.target.closest('#share-menu')) {
+    const menu = modalBody.querySelector('#share-menu');
+    const btn = modalBody.querySelector('[data-action="share-menu"]');
+    if (menu && !menu.hidden) {
+      menu.hidden = true;
+      btn?.setAttribute('aria-expanded', 'false');
+    }
   }
   if (e.key === 'Tab' && !modal.hidden) {
     const focusables = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');

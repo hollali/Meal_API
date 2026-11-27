@@ -50,7 +50,9 @@ describe('ui', () => {
     const html = renderModalBody(meal, true);
     expect(html).toContain('Flour - 2 cups');
     expect(html).toContain('Remove from favorites');
-    expect(html).toContain('data-action="share"');
+    expect(html).toContain('data-action="share-menu"');
+    expect(html).toContain('data-action="native-share"');
+    expect(html).toContain('wa.me');
     expect(html).toContain('data-action="shopping"');
   });
 
